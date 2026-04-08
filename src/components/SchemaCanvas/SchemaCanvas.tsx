@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { dbService } from '../services/dbService';
-import type { Annotation } from '../db/database';
+import { dbService } from '../../services/dbService.ts';
+import type { Annotation } from '../../db/database.ts';
+import styles from './SchemaCanvas.module.css'
 
 declare const fabric: any;
 
@@ -261,26 +262,20 @@ const SchemaCanvas: React.FC<SchemaCanvasProps> = ({ schemaId, projectId, imageB
     if (error) return <div style={{ color: 'red', padding: 20 }}>Ошибка: {error}</div>;
 
     return (
-        <div style={{ position: 'relative', display: 'inline-block' }}>
-            <div style={{
-                position: 'absolute', top: 10, left: 10, zIndex: 10,
-                background: 'white', padding: 8, borderRadius: 8,
-                display: 'flex', gap: 8, boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-            }}>
+        <div className={styles.container}>
+            <div className={styles.toolbar}>
                 <button onClick={() => addShape('rect')}>⬛ Прямоугольник</button>
                 <button onClick={() => addShape('arrow')}>➡️ Стрелка</button>
                 <button onClick={() => addShape('text')}>📝 Текст</button>
                 <button onClick={addPhotoFromPC}>🖼️ Фото</button>
-                <button onClick={deleteSelected} style={{backgroundColor: '#fff0f0'}}>🗑️ Удалить</button>
+                <button className={styles.deleteButton} onClick={deleteSelected}>🗑️ Удалить</button>
             </div>
 
-            <canvas ref={canvasRef} style={{border: '1px solid #ccc' }} />
+            <canvas ref={canvasRef} className={styles.canvas} style={{border: '1px solid #ccc'}}/>
+            {/* если хотите полностью убрать inline-стиль, уберите его и задайте border в CSS — я уже задал выше */}
 
             {loading && (
-                <div style={{
-                    position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-                    background: 'rgba(0,0,0,0.8)', color: 'white', padding: '15px 25px', borderRadius: 8
-                }}>
+                <div className={styles.loadingOverlay}>
                     Загрузка схемы...
                 </div>
             )}

@@ -1,7 +1,8 @@
 // src/components/ProjectList.tsx
 import React, { useEffect, useState } from 'react';
-import { dbService } from '../services/dbService';
-import type { Project, Schema } from '../db/database';
+import { dbService } from '../../services/dbService.ts';
+import type { Project, Schema } from '../../db/database.ts';
+import styles from './ProjectList.module.css'
 
 interface ProjectListProps {
     onSelectProject: (projectId: number, schemaId: number) => void;
@@ -75,32 +76,59 @@ const ProjectList: React.FC<ProjectListProps> = ({ onSelectProject }) => {
     };
 
     return (
-        <div style={{ padding: 20 }}>
-            <h1>Проекты обследования</h1>
-            <div style={{ marginBottom: 20 }}>
+        <div className={styles.container}>
+            <h1 className={styles.title}>Проекты обследования</h1>
+
+            <div className={styles.formContainer}>
                 <input
                     type="text"
                     placeholder="Название проекта"
                     value={newProjectName}
                     onChange={(e) => setNewProjectName(e.target.value)}
+                    className={styles.input}
                 />
                 <input
                     type="text"
                     placeholder="Описание"
                     value={newProjectDesc}
                     onChange={(e) => setNewProjectDesc(e.target.value)}
+                    className={styles.input}
                 />
-                <button onClick={addProject}>➕ Добавить проект</button>
+                <button onClick={addProject} className={styles.button}>
+                    ➕ Добавить проект
+                </button>
             </div>
-            {projects.length === 0 && <p>Нет проектов. Создайте первый.</p>}
-            <ul style={{ listStyle: 'none', padding: 0 }}>
+
+            {projects.length === 0 && <p className={styles.emptyMessage}>Нет проектов. Создайте первый.</p>}
+
+            <ul className={styles.projectList}>
                 {projects.map((proj) => (
-                    <li key={proj.id} style={{ border: '1px solid #ccc', marginBottom: 10, padding: 10, borderRadius: 8 }}>
-                        <h3>{proj.name}</h3>
-                        <p>{proj.description}</p>
-                        <button onClick={() => openProject(proj.id!)}>📂 Открыть</button>
-                        <button onClick={() => uploadSchema(proj.id!)} style={{ marginLeft: 10 }}>📷 Загрузить схему</button>
-                        <button onClick={() => deleteProject(proj.id!)} style={{ marginLeft: 10, backgroundColor: '#ffcccc' }}>🗑️ Удалить</button>
+                    <li key={proj.id} className={styles.projectItem}>
+                        <h3 className={styles.projectTitle}>{proj.name}</h3>
+                        <p className={styles.projectDescription}>{proj.description}</p>
+
+                        <div className={styles.buttonGroup}>
+                            <button
+                                onClick={() => openProject(proj.id!)}
+                                className={styles.openButton}
+                            >
+                                📂 Открыть
+                            </button>
+
+                            <button
+                                onClick={() => uploadSchema(proj.id!)}
+                                className={styles.schemaButton}
+                            >
+                                📷 Загрузить схему
+                            </button>
+
+                            <button
+                                onClick={() => deleteProject(proj.id!)}
+                                className={styles.deleteButton}
+                            >
+                                🗑️ Удалить
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>

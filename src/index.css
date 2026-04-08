@@ -1,5 +1,80 @@
+:root {
+  /* Фоны */
+  --bg-primary: #0F1117;      /* основной фон страницы – тёмный с синевой */
+  --bg-secondary: #1A1D26;    /* карточки, сайдбар, модальные окна */
+  --bg-tertiary: #252A37;     /* элементы при наведении, поля ввода */
+
+  /* Текст */
+  --text-primary: #EDF2F7;    /* основной текст – почти белый */
+  --text-secondary: #A0AEC0;  /* второстепенный текст, подсказки */
+  --text-disabled: #4A5568;   /* неактивный текст */
+
+  /* Акценты (action) */
+  --accent-primary: #2DD4BF;  /* бирюзовый – основные кнопки, ссылки */
+  --accent-secondary: #8B5CF6; /* фиолетовый – второстепенные действия, иконки */
+  --accent-warning: #F59E0B;  /* янтарный – предупреждения */
+  --accent-error: #EF4444;    /* красный – ошибки, удаление */
+  --accent-success: #10B981;  /* изумрудный – успех, синхронизация */
+
+  /* Границы и разделители */
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.12);
+
+  /* Тени (для карточек, модалок) */
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 12px -2px rgba(0, 0, 0, 0.4);
+}
+/* Подключение шрифтов */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/fonts/Montserrat-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/fonts/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/fonts/Montserrat-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/fonts/Montserrat-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./assets/fonts/Montserrat-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Глобальные стили */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0F1117;
 }

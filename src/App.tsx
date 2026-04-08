@@ -1,7 +1,7 @@
 // src/App.tsx
 import React, { useState } from 'react';
-import ProjectList from './components/ProjectList';
-import SchemaCanvas from './components/SchemaCanvas';
+import ProjectList from './components/ProjectList/ProjectList.tsx';
+import SchemaCanvas from './components/SchemaCanvas/SchemaCanvas.tsx';
 import OnlineStatus from './components/OnlineStatus';
 import { dbService } from './services/dbService';
 import type { Schema } from './db/database';
@@ -39,8 +39,8 @@ function App() {
 
     return (
         <div>
-            <ProjectList onSelectProject={handleSelectProject} />
             <OnlineStatus />
+            <ProjectList onSelectProject={handleSelectProject} />
         </div>
     );
 }
