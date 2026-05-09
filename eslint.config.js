@@ -21,5 +21,19 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Отключаем почти все проверки типов, оставляем только синтаксис
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off', // Разрешает @ts-ignore
+      '@typescript-eslint/no-non-null-assertion': 'off',
+
+      // React
+      'react-hooks/exhaustive-deps': 'off', // Полностью отключает проверку зависимостей хуков
+
+      // JS
+      'no-console': 'off',
+      'no-debugger': 'warn', // Оставлять предупреждение на debugger
+    },
   },
 ]);

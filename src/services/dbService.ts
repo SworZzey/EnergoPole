@@ -29,6 +29,17 @@ export const dbService = {
         await db.projects.delete(id);
     },
 
+    async deleteSchema(schemaId: number): Promise<void> {
+        // Используем транзакцию, чтобы гарантировать целостность данных
+        await db.transaction('rw', db.schemas, db.annotations, async () => {
+            // 1. Удаляем все аннотации, привязанные к этой схеме
+            await db.annotations.where('schemaId').equals(schemaId).delete();
+
+            // 2. Удаляем саму схему
+            await db.schemas.delete(schemaId);
+        });
+    },
+
     // Схемы
     async addSchema(schema: Omit<Schema, 'id'>): Promise<number> {
         return await db.schemas.add(schema);

@@ -1,0 +1,75 @@
+.projectItem {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 18px;
+    transition: all 0.2s;
+}
+
+.projectItem:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-md);
+    transform: translateX(4px);
+}
+
+.projectTitle {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+    color: var(--text-primary);
+}
+
+.projectDescription {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.openButton {
+    background-color: rgba(45, 212, 191, 0.1);
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.openButton:hover {
+    background-color: var(--accent-primary);
+    color: #0F1117;
+}
+
+.schemaButton {
+    background-color: rgba(139, 92, 246, 0.1);
+    border: 1px solid var(--accent-secondary);
+    color: var(--accent-secondary);
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.schemaButton:hover {
+    background-color: var(--accent-secondary);
+    color: #0F1117;
+}
+
+.deleteButton {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--accent-error);
+    color: var(--accent-error);
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.deleteButton:hover {
+    background-color: var(--accent-error);
+    color: white;
+}
