@@ -1,7 +1,8 @@
 // SchemaCanvas.tsx
-import React from 'react';
+import React, {useState} from 'react';
 import { useSchemaCanvas } from '../useSchemaCanvas.ts';
 import { CanvasToolbar } from '../CanvasToolbar/CanvasToolbar.tsx';
+import PhotoGeoModal from '../PhotoGeoModal/PhotoGeoModal';
 import styles from './SchemaCanvas.module.css'
 
 interface SchemaCanvasProps {
@@ -11,10 +12,19 @@ interface SchemaCanvasProps {
 }
 
 const SchemaCanvas: React.FC<SchemaCanvasProps> = ({ schemaId, projectId, imageBlob }) => {
+    const [selectedPhoto, setSelectedPhoto] = useState<{
+        id: number;
+        latitude: number | null;
+        longitude: number | null;
+        accuracy?: number | null;
+        capturedAt?: Date | null;
+    } | null>(null);
+
     const { canvasRef, loading, error, actions } = useSchemaCanvas({
         schemaId,
         projectId,
-        imageBlob
+        imageBlob,
+        onPhotoClick: setSelectedPhoto
     });
 
     if (error) return <div style={{ color: 'red', padding: 20 }}>Ошибка: {error}</div>;
@@ -37,6 +47,13 @@ const SchemaCanvas: React.FC<SchemaCanvasProps> = ({ schemaId, projectId, imageB
                     </div>
                 )}
             </div>
+
+            {selectedPhoto && (
+                <PhotoGeoModal
+                    photoInfo={selectedPhoto}
+                    onClose={() => setSelectedPhoto(null)}
+                />
+            )}
         </div>
     );
 };

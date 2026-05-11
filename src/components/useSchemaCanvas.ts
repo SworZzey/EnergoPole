@@ -1,4 +1,3 @@
-// hooks/useSchemaCanvas.ts
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { dbService } from '../services/dbService';
 import type { Annotation } from '../db/database';
@@ -9,9 +8,16 @@ interface UseSchemaCanvasProps {
     schemaId: number;
     projectId: number;
     imageBlob: Blob;
+    onPhotoClick?: (photoInfo: {
+        id: number;
+        latitude: number | null;
+        longitude: number | null;
+        accuracy?: number | null;
+        capturedAt?: Date | null;
+    }) => void;
 }
 
-export const useSchemaCanvas = ({ schemaId, projectId, imageBlob }: UseSchemaCanvasProps) => {
+export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }: UseSchemaCanvasProps) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     // Используем наш тип вместо any
     const fabricCanvasRef = useRef<IFabricCanvas | null>(null);
@@ -19,7 +25,6 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob }: UseSchemaCan
     const [error, setError] = useState<string | null>(null);
     const mountedRef = useRef(true);
 
-    // --- Вспомогательные функции ---
 
     // Типизируем аргумент как IFabricObject
     const getObjectData = (obj: IFabricObject) => {
@@ -69,7 +74,12 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob }: UseSchemaCan
         }
     };
 
-    const saveAnnotation = async (obj: IFabricObject, annotationType: Annotation['type']) => {
+    // Обновленная сигнатура
+    const saveAnnotation = async (
+        obj: IFabricObject,
+        annotationType: Annotation['type'],
+        geoData?: { latitude: number | null; longitude: number | null; accuracy: number | null }
+    ) => {
         const data = getObjectData(obj);
         const annotation: Omit<Annotation, 'id'> = {
             schemaId,
@@ -78,10 +88,20 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob }: UseSchemaCan
             coordinates: JSON.stringify(data),
             content: obj.type === 'textbox' ? (obj as any).text : undefined,
             createdAt: new Date(),
+            //  Сохраняем геоданные только для изображений
+            latitude: annotationType === 'image' ? geoData?.latitude ?? null : null,
+            longitude: annotationType === 'image' ? geoData?.longitude ?? null : null,
+            geoAccuracy: annotationType === 'image' ? geoData?.accuracy ?? null : null,
+            geoCapturedAt: annotationType === 'image' && geoData?.latitude ? new Date() : null,
         };
+
         try {
             const id = await dbService.addAnnotation(annotation);
             obj.set('id', id);
+            // Также сохраняем в объект Fabric для быстрого доступа
+            if (geoData?.latitude) {
+                obj.set('geoData', geoData);
+            }
         } catch (e) {
             console.error("Failed to save annotation", e);
         }
@@ -122,19 +142,69 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob }: UseSchemaCan
                 return;
             }
 
-            const scale = Math.min(canvas.getWidth() / img.width, canvas.getHeight() / img.height);
+            const scale = Math.min(canvas.getWidth() / img.width!, canvas.getHeight() / img.height!);
             img.scale(scale);
 
             // setBackgroundImage требует IFabricImage
             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-            canvas.setDimensions({ width: img.width * scale, height: img.height * scale });
+            canvas.setDimensions({ width: img.width! * scale, height: img.height! * scale });
 
             setLoading(false);
             URL.revokeObjectURL(url);
         });
 
+
+        let clickTarget: any = null;
+        let isDragging = false;
+
+        // Вспомогательная функция открытия модалки
+        const triggerGeoModal = (target: any) => {
+            const geoData = target.get('geoData') || {
+                latitude: target.get('latitude'),
+                longitude: target.get('longitude'),
+                accuracy: target.get('geoAccuracy'),
+                capturedAt: target.get('geoCapturedAt')
+            };
+
+            // Легкая вибрация на мобильных
+            if (navigator.vibrate) navigator.vibrate(15);
+
+            onPhotoClick?.({
+                id: target.get('id'),
+                latitude: geoData?.latitude ?? null,
+                longitude: geoData?.longitude ?? null,
+                accuracy: geoData?.accuracy ?? null,
+                capturedAt: geoData?.capturedAt ?? null
+            });
+        };
+
+// 1. Запоминаем цель при нажатии
+        canvas.on('mouse:down', (opt) => {
+            if (opt.target && opt.target.type === 'image') {
+                clickTarget = opt.target;
+                isDragging = false; // Сбрасываем флаг
+            }
+        });
+
+// 2. Если объект начал двигаться → это точно не клик, а драг
+        canvas.on('object:moving', () => {
+            isDragging = true;
+        });
+
+// 3. При отпускании проверяем: двигали или нет?
+        canvas.on('mouse:up', () => {
+            if (clickTarget && !isDragging) {
+                // Палец отпустили, объект не сдвинулся → открываем попап
+                triggerGeoModal(clickTarget);
+            }
+            // Очищаем состояние
+            clickTarget = null;
+            isDragging = false;
+        });
+
         // Типизируем событие
         canvas.on('object:modified', (e: FabricEvent) => updateAnnotation(e.target));
+
 
         return () => {
             mountedRef.current = false;
@@ -243,19 +313,54 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob }: UseSchemaCan
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
+
         input.onchange = async (e) => {
             const file = (e.target as HTMLInputElement).files?.[0];
             if (!file) return;
+
             const reader = new FileReader();
             reader.onload = async (event) => {
                 const dataURL = event.target?.result as string;
                 const canvas = fabricCanvasRef.current;
                 if (!canvas) return;
 
-                window.fabric.Image.fromURL(dataURL, (img: IFabricImage) => {
-                    img.set({ left: 100, top: 100, scaleX: 0.5, scaleY: 0.5 });
+                // 1. Запрашиваем геолокацию (не блокируем загрузку фото)
+                let latitude: number | null = null;
+                let longitude: number | null = null;
+                let accuracy: number | null = null;
+
+                try {
+                    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true, // Используем GPS если есть
+                            timeout: 10000,
+                            maximumAge: 0
+                        });
+                    });
+                    latitude = position.coords.latitude;
+                    longitude = position.coords.longitude;
+                    accuracy = position.coords.accuracy;
+                } catch (err) {
+                    console.warn('Геолокация недоступна:', err);
+                    // Продолжаем без координат — это не критично
+                }
+
+                // 🖼️ 2. Создаём изображение на холсте
+                window.fabric.Image.fromURL(dataURL, (img: any) => {
+                    img.set({
+                        left: 100,
+                        top: 100,
+                        scaleX: 0.5,
+                        scaleY: 0.5,
+                        // Сохраняем геоданные в метаданные объекта Fabric
+                        geoData: { latitude, longitude, accuracy }
+                    });
+
                     canvas.add(img);
-                    saveAnnotation(img, 'image');
+
+                    // 3. Сохраняем аннотацию с геоданными
+                    saveAnnotation(img, 'image', { latitude, longitude, accuracy });
+
                     canvas.setActiveObject(img);
                     canvas.renderAll();
                 });
@@ -287,6 +392,7 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob }: UseSchemaCan
         canvasRef,
         loading,
         error,
-        actions: { addShape, addPhotoFromPC, deleteSelected }
+        actions: { addShape, addPhotoFromPC, deleteSelected },
+        onPhotoClick
     };
 };

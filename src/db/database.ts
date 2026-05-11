@@ -28,6 +28,10 @@ export interface Annotation {
     content?: string;
     color?: string;
     createdAt: Date;
+    latitude?: number | null;
+    longitude?: number | null;
+    geoAccuracy?: number | null; // Точность в метрах
+    geoCapturedAt?: Date | null; // Время захвата координат
 }
 
 export interface Note {
@@ -73,6 +77,19 @@ export class EnergopoleDB extends Dexie {
             annotations: '++id, schemaId, projectId, type, createdAt',
             notes: '++id, projectId, status, syncStatus, createdAt',
             photos: '++id, projectId, noteId, syncStatus, timestamp',
+        });
+
+        this.version(2).stores({
+            annotations: '++id, schemaId, projectId, type, createdAt, latitude, longitude',
+            // Остальные таблицы не меняются — их можно не указывать,
+            // Dexie сохранит их конфигурацию из версии 1
+        }).upgrade(tx => {
+            return tx.table('annotations').toCollection().modify(annotation => {
+                annotation.latitude = null;
+                annotation.longitude = null;
+                annotation.geoAccuracy = null;
+                annotation.geoCapturedAt = null;
+            });
         });
     }
 }
