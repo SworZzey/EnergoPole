@@ -1,0 +1,311 @@
+/* Затемненный фон-оверлей */
+.formOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 17, 23, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Карточка формы */
+.formCard {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: var(--shadow-md);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.formCard h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+/* Поля ввода */
+.input,
+.textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 15px;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.input:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.2);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.textarea {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+/* Строка с файлом и геолокацией */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.fileInput {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 14px;
+    border: 1px dashed var(--border-light);
+    border-radius: 12px;
+    background: rgba(45, 212, 191, 0.05);
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.fileInput:hover {
+    border-color: var(--accent-primary);
+    background: rgba(45, 212, 191, 0.1);
+}
+
+.fileInput::-webkit-file-upload-button {
+    display: none;
+}
+
+.fileInput::before {
+    content: '📎 Прикрепить фото';
+    font-weight: 500;
+    color: var(--accent-primary);
+}
+
+/* Кнопка геолокации */
+.geoButton {
+    background-color: rgba(139, 92, 246, 0.1);
+    border: 1px solid var(--accent-secondary);
+    color: var(--accent-secondary);
+    padding: 10px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.geoButton:hover {
+    background-color: var(--accent-secondary);
+    color: #0F1117;
+}
+
+.geoButton:active {
+    transform: scale(0.98);
+}
+
+/* Кнопки действий */
+.actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* Глобальные кнопки .primary-button и .secondary-button
+   должны быть определены в вашем global.css.
+   Если нет — вот локальные стили для них: */
+
+.primary-button {
+    background-color: var(--accent-primary);
+    color: #0F1117;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.primary-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.primary-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+
+.secondary-button {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    padding: 12px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.secondary-button:hover {
+    border-color: var(--accent-error);
+    color: var(--accent-error);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 480px) {
+    .formCard {
+        padding: 20px;
+        margin: 10px;
+    }
+
+    .formCard h3 {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
+
+    .row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .geoButton {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+    }
+
+    .primary-button,
+    .secondary-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Состояние ошибки для полей (можно добавить позже) */
+.input.error,
+.textarea.error {
+    border-color: var(--accent-error);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Индикатор загрузки (опционально) */
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(15, 17, 23, 0.3);
+    border-radius: 50%;
+    border-top-color: #0F1117;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+}
+
+/* Добавьте в конец файла */
+
+/* Секция карты */
+.mapSection {
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mapToggleButton {
+    background-color: rgba(45, 212, 191, 0.1);
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    padding: 10px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+}
+
+.mapToggleButton:hover {
+    background-color: var(--accent-primary);
+    color: #0F1117;
+}
+
+.coordsPreview {
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: rgba(45, 212, 191, 0.05);
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px dashed var(--accent-primary);
+    width: fit-content;
+    font-family: monospace;
+}
+
+/* Адаптив для карты */
+@media (max-width: 480px) {
+    .mapToggleButton {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

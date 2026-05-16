@@ -1,5 +1,5 @@
 import { db } from '../db/database';
-import type { Project, Schema, Annotation, Note, Photo } from '../db/database';
+import type { Project, Schema, Annotation, Note, Photo, Task } from '../db/database';
 
 // Проекты
 export const dbService = {
@@ -143,4 +143,24 @@ export const dbService = {
         await db.notes.clear();
         await db.photos.clear();
     },
+
+    async getTasksByProject(projectId: number): Promise<Task[]> {
+        return await db.tasks.where('projectId').equals(projectId).sortBy('createdAt');
+    },
+
+    async addTask(task: Omit<Task, 'id' | 'createdAt' | 'syncStatus'>): Promise<number> {
+        return await db.tasks.add({
+            ...task,
+            createdAt: new Date(),
+            syncStatus: 'pending'
+        });
+    },
+
+    async updateTaskStatus(id: number, status: Task['status']): Promise<void> {
+        await db.tasks.update(id, { status });
+    },
+
+    async deleteTask(id: number): Promise<void> {
+        await db.tasks.delete(id);
+    }
 };

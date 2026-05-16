@@ -1,0 +1,65 @@
+.container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 12px 0;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    color: var(--text-primary);
+}
+
+.coords {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0;
+    font-size: 13px;
+}
+
+.label {
+    color: var(--text-secondary);
+}
+
+.value {
+    color: var(--text-primary);
+    font-family: monospace;
+    font-weight: 500;
+}
+
+.openMapLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.openMapLink:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+.noCoords {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+}
+
+.noCoords .icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.7;
+}
+
+.noCoords p {
+    margin: 0;
+    font-size: 14px;
+}

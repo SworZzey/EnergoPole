@@ -1,3 +1,4 @@
+// src/components/ProjectList/ProjectItem.tsx
 import React from 'react';
 import { dbService } from '../../services/dbService';
 import styles from './ProjectItem.module.css';
@@ -7,11 +8,18 @@ interface ProjectItemProps {
     project: Project;
     onDelete: () => void;
     onOpenProject: (project: Project) => void;
+    onViewTasks?: (project: Project) => void; // 👈 Объявили
+    userRole?: 'engineer' | 'manager';
 }
 
-const ProjectItem: React.FC<ProjectItemProps> = ({ project, onDelete, onOpenProject }) => {
+const ProjectItem: React.FC<ProjectItemProps> = ({
+                                                     project,
+                                                     onDelete,
+                                                     onOpenProject,
+                                                     onViewTasks,
+                                                     userRole = 'engineer'
+                                                 }) => {
 
-    // Логика загрузки файла
     const handleUploadSchema = async () => {
         const input = document.createElement('input');
         input.type = 'file';
@@ -53,20 +61,54 @@ const ProjectItem: React.FC<ProjectItemProps> = ({ project, onDelete, onOpenProj
             <p className={styles.projectDescription}>{project.description}</p>
 
             <div className={styles.buttonGroup}>
-                <button
-                    onClick={() => onOpenProject(project)}
-                    className={styles.openButton}
-                >
-                    📂 Открыть
-                </button>
+                {userRole === 'manager' ? (
+                    // === КНОПКИ ДЛЯ МЕНЕДЖЕРА ===
+                    <button
+                        onClick={() => onOpenProject(project)}
+                        className={styles.openButton}
+                        style={{
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            borderColor: 'var(--accent-secondary)',
+                            color: 'var(--accent-secondary)'
+                        }}
+                    >
+                        📋 Задачи
+                    </button>
+                ) : (
+                    // === КНОПКИ ДЛЯ ИНЖЕНЕРА ===
+                    <>
+                        {/* 👇 Новая кнопка "Задачи" для инженера */}
+                        {onViewTasks && (
+                            <button
+                                onClick={() => onViewTasks(project)}
+                                className={styles.openButton}
+                                style={{
+                                    backgroundColor: 'rgba(45, 212, 191, 0.1)',
+                                    borderColor: 'var(--accent-primary)',
+                                    color: 'var(--accent-primary)'
+                                }}
+                            >
+                                📋 Задачи
+                            </button>
+                        )}
 
-                <button
-                    onClick={handleUploadSchema}
-                    className={styles.schemaButton}
-                >
-                    📷 Загрузить схему
-                </button>
+                        <button
+                            onClick={() => onOpenProject(project)}
+                            className={styles.openButton}
+                        >
+                            📂 Открыть
+                        </button>
 
+                        <button
+                            onClick={handleUploadSchema}
+                            className={styles.schemaButton}
+                        >
+                            📷 Загрузить схему
+                        </button>
+                    </>
+                )}
+
+                {/* Кнопка удаления общая для всех */}
                 <button
                     onClick={handleDelete}
                     className={styles.deleteButton}

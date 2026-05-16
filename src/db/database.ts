@@ -49,6 +49,20 @@ export interface Note {
     updatedAt: Date;
 }
 
+export interface Task {
+    id?: number;
+    projectId: number;
+    title: string;
+    description: string;
+    photoBlob?: Blob | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    status: 'open' | 'in_progress' | 'closed';
+    createdBy: 'manager';
+    createdAt: Date;
+    syncStatus: 'pending' | 'synced';
+}
+
 export interface Photo {
     id?: number;
     projectId: number;
@@ -90,6 +104,17 @@ export class EnergopoleDB extends Dexie {
                 annotation.geoAccuracy = null;
                 annotation.geoCapturedAt = null;
             });
+        });
+
+        this.version(3).stores({
+            projects: '++id, name',
+            schemas: '++id, projectId',
+            annotations: '++id, schemaId',
+            tasks: '++id, projectId, status, syncStatus, createdAt',
+            // остальные таблицы не меняются
+        }).upgrade(tx => {
+            // Если база уже была версии 2, просто создаем таблицу tasks
+            // Dexie сделает это автоматически, upgrade нужен только для миграции старых данных
         });
     }
 }

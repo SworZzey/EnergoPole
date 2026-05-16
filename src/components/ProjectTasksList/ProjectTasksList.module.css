@@ -1,0 +1,221 @@
+/* Контейнер списка — добавляем отступы и ограничиваем ширину */
+.taskList {
+    list-style: none;
+    padding: 0 20px; /* 👈 Отступы по бокам, чтобы ховер не вылезал */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Карточка задачи */
+.taskCard {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 18px;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* 👇 Безопасный ховер: вместо сдвига используем тень и границу */
+}
+
+.taskCard:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-md);
+    /* Убираем transform: translateX, чтобы не вылезать за края */
+}
+
+/* Альтернатива: если очень хочется сдвига, делаем его внутрь или минимальным */
+/* .taskCard:hover {
+    transform: translateX(2px);
+    margin-right: -2px; /* Компенсируем сдвиг */
+/* } */
+
+/* Заголовок задачи */
+.taskHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.taskHeader h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+    flex-grow: 1;
+    word-break: break-word; /* Чтобы длинные названия не ломали вёрстку */
+}
+
+/* Бейдж статуса */
+.badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+/* Цвета статусов */
+.status-open .badge {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--accent-error);
+    border: 1px solid var(--accent-error);
+}
+
+.status-in_progress .badge {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: var(--accent-secondary);
+    border: 1px solid var(--accent-secondary);
+}
+
+.status-closed .badge {
+    background-color: rgba(45, 212, 191, 0.1);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+}
+
+/* Описание задачи */
+.description {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* Геотеги */
+.geoTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: rgba(45, 212, 191, 0.05);
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 1px dashed var(--accent-primary);
+    width: fit-content;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Кнопка смены статуса */
+.statusButton {
+    align-self: flex-start;
+    background-color: rgba(139, 92, 246, 0.1);
+    border: 1px solid var(--accent-secondary);
+    color: var(--accent-secondary);
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.statusButton:hover {
+    background-color: var(--accent-secondary);
+    color: #0F1117;
+}
+
+.statusButton:active {
+    transform: scale(0.98);
+}
+
+/* Пустое состояние */
+.empty-message {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px 20px;
+    background: var(--bg-secondary);
+    border: 1px dashed var(--border-light);
+    border-radius: 20px;
+    margin: 20px;
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 480px) {
+    .taskList {
+        padding: 0 12px; /* 👈 Меньшие отступы на мобильных */
+    }
+
+    .taskCard {
+        padding: 16px;
+    }
+
+    .taskHeader {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .taskHeader h3 {
+        font-size: 18px;
+    }
+
+    .badge {
+        font-size: 11px;
+        padding: 3px 10px;
+        align-self: flex-start;
+    }
+
+    .description {
+        font-size: 14px;
+    }
+
+    .statusButton {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Глобальные кнопки (если нет в global.css) */
+.primary-button,
+.secondary-button {
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.primary-button {
+    background-color: var(--accent-primary);
+    color: #0F1117;
+    border: none;
+}
+
+.primary-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.primary-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+
+.secondary-button {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+}
+
+.secondary-button:hover {
+    border-color: var(--accent-error);
+    color: var(--accent-error);
+    background: rgba(239, 68, 68, 0.05);
+}

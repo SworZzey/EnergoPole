@@ -1,9 +1,8 @@
-// src/services/authService.ts
 export interface User {
     id: string;
     email: string;
     name: string;
-    role?: string;
+    role: 'engineer' | 'manager';
 }
 
 export const authService = {
@@ -11,10 +10,16 @@ export const authService = {
     login: async (email: string, password: string): Promise<User> => {
         await new Promise((res) => setTimeout(res, 800));
 
-        if (email === 'user@example.com' && password === 'password') {
-            const user: User = { id: '1', email, name: 'Инженер Иванов' };
-            localStorage.setItem('authToken', 'mock-token-123');
+        if (email === 'manager@example.com' && password === 'manager') {
+            const user: User = { id: '1', email, name: 'Менеджер Сидоров', role: 'manager' };
             localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('authToken', 'mock-manager-token');
+            return user;
+        }
+        if (email === 'user@example.com' && password === 'password') {
+            const user: User = { id: '2', email, name: 'Инженер Иванов', role: 'engineer' };
+            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('authToken', 'mock-engineer-token');
             return user;
         }
         throw new Error('Неверный email или пароль');
