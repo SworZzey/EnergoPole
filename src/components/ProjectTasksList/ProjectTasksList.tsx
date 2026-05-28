@@ -7,7 +7,7 @@ import TaskGeoView from '../TaskGeoView/TaskGeoView';
 interface ProjectTasksListProps {
     projectId: number;
     onBack: () => void;
-    onCreateTask?: () => void; // Только для менеджера
+    onCreateTask?: () => void;
 }
 
 const ProjectTasksList: React.FC<ProjectTasksListProps> = ({ projectId, onBack, onCreateTask }) => {
@@ -26,13 +26,20 @@ const ProjectTasksList: React.FC<ProjectTasksListProps> = ({ projectId, onBack, 
 
     return (
         <div className="page-container">
-            <div className="toolbar-header">
-                <button onClick={onBack}>← Назад</button>
-                <h2>Задачи проекта</h2>
+            <div className={styles.tlbHeader}>
+                <button onClick={onBack} className={styles.backButton}>← Назад</button>
+                <h2 className={styles.blkHeader}>Задачи проекта</h2>
             </div>
 
             {loading ? <p>Загрузка...</p> : (
                 <>
+                    {onCreateTask && (
+                        <div className={styles.btnHeader}>
+                            <button onClick={onCreateTask} className={styles.addButton} style={{marginTop: 20}}>
+                                ➕ Создать новую задачу
+                            </button>
+                        </div>
+                    )}
                     <ul className={styles.taskList}>
                         {tasks.map(task => (
                             <li key={task.id} className={`${styles.taskCard} ${styles[`status-${task.status}`]}`}>
@@ -56,12 +63,7 @@ const ProjectTasksList: React.FC<ProjectTasksListProps> = ({ projectId, onBack, 
                             </li>
                         ))}
                     </ul>
-                    {tasks.length === 0 && <p className="empty-message">Задач пока нет.</p>}
-                    {onCreateTask && (
-                        <button onClick={onCreateTask} className="primary-button" style={{marginTop: 20}}>
-                            ➕ Создать новую задачу
-                        </button>
-                    )}
+                    {tasks.length === 0 && <p className={styles.noTasks}>Задач пока нет.</p>}
                 </>
             )}
         </div>

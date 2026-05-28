@@ -73,6 +73,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
                 <div className={styles.demoHint}>
                     <p>Демо: <strong>user@example.com</strong> / <strong>password</strong></p>
+                    <p>Демо: <strong>manager@example.com</strong> / <strong>manager</strong></p>
                 </div>
             </div>
         </div>

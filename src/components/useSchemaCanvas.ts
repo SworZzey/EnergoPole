@@ -1,8 +1,8 @@
+// src/hooks/useSchemaCanvas.ts
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { dbService } from '../services/dbService';
 import type { Annotation } from '../db/database';
-import type { IFabricCanvas, IFabricObject, IFabricImage, FabricEvent } from './fabric'; // Импортируем типы
-
+import type { IFabricCanvas, IFabricObject, IFabricImage, FabricEvent } from './fabric';
 
 interface UseSchemaCanvasProps {
     schemaId: number;
@@ -19,14 +19,15 @@ interface UseSchemaCanvasProps {
 
 export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }: UseSchemaCanvasProps) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    // Используем наш тип вместо any
     const fabricCanvasRef = useRef<IFabricCanvas | null>(null);
+
+    // 👇 НОВЫЙ: Экспортируемый реф для внешнего управления размером
+    const canvasInstance = useRef<IFabricCanvas | null>(null);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const mountedRef = useRef(true);
 
-
-    // Типизируем аргумент как IFabricObject
     const getObjectData = (obj: IFabricObject) => {
         const baseData = {
             left: obj.left,
@@ -53,7 +54,6 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         } else if (obj.type === 'textbox') {
             return { ...baseData, text: (obj as any).text, fontSize: (obj as any).fontSize };
         } else if (obj.type === 'image') {
-            // getSrc есть в нашем интерфейсе IFabricObject опционально
             return { ...baseData, dataURL: obj.getSrc ? obj.getSrc() : '', width: obj.width, height: obj.height };
         }
         return baseData;
@@ -74,7 +74,6 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         }
     };
 
-    // Обновленная сигнатура
     const saveAnnotation = async (
         obj: IFabricObject,
         annotationType: Annotation['type'],
@@ -88,7 +87,6 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
             coordinates: JSON.stringify(data),
             content: obj.type === 'textbox' ? (obj as any).text : undefined,
             createdAt: new Date(),
-            //  Сохраняем геоданные только для изображений
             latitude: annotationType === 'image' ? geoData?.latitude ?? null : null,
             longitude: annotationType === 'image' ? geoData?.longitude ?? null : null,
             geoAccuracy: annotationType === 'image' ? geoData?.accuracy ?? null : null,
@@ -98,7 +96,6 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         try {
             const id = await dbService.addAnnotation(annotation);
             obj.set('id', id);
-            // Также сохраняем в объект Fabric для быстрого доступа
             if (geoData?.latitude) {
                 obj.set('geoData', geoData);
             }
@@ -107,6 +104,47 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         }
     };
 
+
+    const resizeCanvas = useCallback(() => {
+        const canvas = fabricCanvasRef.current;
+        if (!canvas || !mountedRef.current) return;
+
+        // Получаем размеры доступной области
+        const toolbarHeight = 60;
+        const availableWidth = window.innerWidth;
+        const availableHeight = window.innerHeight - toolbarHeight;
+
+        // Получаем фоновое изображение
+        const bgImage = canvas.backgroundImage as IFabricImage;
+
+        // 👇 ЗАЩИТА: Если изображение ещё не загрузилось или не имеет размеров — выходим
+        if (!bgImage || !bgImage.width || !bgImage.height) {
+            return;
+        }
+
+        const imgWidth = bgImage.width;
+        const imgHeight = bgImage.height;
+
+        // Вычисляем масштаб
+        const scale = Math.min(
+            availableWidth / imgWidth,
+            availableHeight / imgHeight,
+            1
+        );
+
+        // Устанавливаем размеры
+        canvas.setDimensions({
+            width: imgWidth * scale,
+            height: imgHeight * scale
+        });
+
+        // Обновляем масштаб самого изображения (на случай, если оно не подтянулось автоматически)
+        bgImage.scale(scale);
+
+        // Центрируем и перерисовываем
+        canvas.renderAll();
+    }, []);
+
     // --- Эффекты ---
 
     // 1. Инициализация холста
@@ -114,26 +152,25 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         mountedRef.current = true;
         const canvasElement = canvasRef.current;
 
-        // Проверка наличия window.fabric
         if (!canvasElement || typeof window.fabric === 'undefined') {
             setError(!canvasElement ? 'Canvas не найден' : 'Fabric.js не загружен');
             setLoading(false);
             return;
         }
 
-        // Теперь TypeScript знает, что window.fabric.Canvas существует
         const canvas = new window.fabric.Canvas(canvasElement, {
             selection: true,
             preserveObjectStacking: true,
+            // 👇 Начальные размеры (будут пересчитаны при загрузке изображения)
             width: window.innerWidth - 40,
             height: window.innerHeight - 200,
         });
 
         fabricCanvasRef.current = canvas;
+        canvasInstance.current = canvas; // 👇 Сохраняем для внешнего доступа
 
         const url = URL.createObjectURL(imageBlob);
 
-        // Используем типизированный вызов
         window.fabric.Image.fromURL(url, (img: IFabricImage) => {
             if (!mountedRef.current || !img) {
                 if (!img) setError('Ошибка загрузки изображения');
@@ -142,22 +179,28 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
                 return;
             }
 
-            const scale = Math.min(canvas.getWidth() / img.width!, canvas.getHeight() / img.height!);
-            img.scale(scale);
+            // 👇 Устанавливаем свойства центрирования ПЕРЕД установкой в фон
+            img.set({
+                originX: 'left',
+                originY: 'top',
+            });
 
-            // setBackgroundImage требует IFabricImage
-            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-            canvas.setDimensions({ width: img.width! * scale, height: img.height! * scale });
+            // 1. Устанавливаем изображение как фон (теперь только 2 аргумента — как ждут ваши типы)
+            canvas.setBackgroundImage(img, () => {
+                canvas.renderAll();
+
+                // 2. И ТОЛЬКО ПОТОМ подгоняем размер канваса под экран
+                if (resizeCanvas) resizeCanvas();
+            });
 
             setLoading(false);
             URL.revokeObjectURL(url);
         });
 
-
+        // Обработчики кликов для геоданных
         let clickTarget: any = null;
         let isDragging = false;
 
-        // Вспомогательная функция открытия модалки
         const triggerGeoModal = (target: any) => {
             const geoData = target.get('geoData') || {
                 latitude: target.get('latitude'),
@@ -166,7 +209,6 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
                 capturedAt: target.get('geoCapturedAt')
             };
 
-            // Легкая вибрация на мобильных
             if (navigator.vibrate) navigator.vibrate(15);
 
             onPhotoClick?.({
@@ -178,40 +220,47 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
             });
         };
 
-// 1. Запоминаем цель при нажатии
         canvas.on('mouse:down', (opt) => {
             if (opt.target && opt.target.type === 'image') {
                 clickTarget = opt.target;
-                isDragging = false; // Сбрасываем флаг
+                isDragging = false;
             }
         });
 
-// 2. Если объект начал двигаться → это точно не клик, а драг
         canvas.on('object:moving', () => {
             isDragging = true;
         });
 
-// 3. При отпускании проверяем: двигали или нет?
         canvas.on('mouse:up', () => {
             if (clickTarget && !isDragging) {
-                // Палец отпустили, объект не сдвинулся → открываем попап
                 triggerGeoModal(clickTarget);
             }
-            // Очищаем состояние
             clickTarget = null;
             isDragging = false;
         });
 
-        // Типизируем событие
         canvas.on('object:modified', (e: FabricEvent) => updateAnnotation(e.target));
 
+        // 👇 Слушаем изменение размера окна и ориентации
+        const handleResize = () => {
+            // Дебаунс 100мс, чтобы не дёргать канвас при каждом пикселе
+            clearTimeout((handleResize as any)._timer);
+            (handleResize as any)._timer = setTimeout(resizeCanvas, 100);
+        };
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', handleResize);
 
         return () => {
             mountedRef.current = false;
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('orientationchange', handleResize);
+            clearTimeout((handleResize as any)._timer);
             canvas.dispose();
             fabricCanvasRef.current = null;
+            canvasInstance.current = null;
         };
-    }, [imageBlob]);
+    }, [imageBlob, resizeCanvas, onPhotoClick]);
 
     // 2. Загрузка аннотаций
     useEffect(() => {
@@ -240,15 +289,12 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
 
                 switch (ann.type) {
                     case 'rect':
-                        // window.fabric.Rect возвращает IFabricObject
                         obj = new window.fabric.Rect({ ...options, width: coords.width, height: coords.height });
                         break;
                     case 'arrow':
-                        // window.fabric.Line возвращает IFabricObject
                         obj = new window.fabric.Line([coords.x1, coords.y1, coords.x2, coords.y2], options);
                         break;
                     case 'text':
-                        // window.fabric.Textbox возвращает IFabricObject
                         obj = new window.fabric.Textbox(coords.text, { ...options, fontSize: coords.fontSize });
                         break;
                     case 'image':
@@ -256,7 +302,6 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
                             const imgEl = document.createElement('img');
                             imgEl.src = coords.dataURL;
                             imgEl.onload = () => {
-                                // new window.fabric.Image возвращает IFabricImage (который наследуется от IFabricObject)
                                 const fabricImg = new window.fabric.Image(imgEl, {
                                     left: coords.left,
                                     top: coords.top,
@@ -324,7 +369,6 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
                 const canvas = fabricCanvasRef.current;
                 if (!canvas) return;
 
-                // 1. Запрашиваем геолокацию (не блокируем загрузку фото)
                 let latitude: number | null = null;
                 let longitude: number | null = null;
                 let accuracy: number | null = null;
@@ -332,7 +376,7 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
                 try {
                     const position = await new Promise<GeolocationPosition>((resolve, reject) => {
                         navigator.geolocation.getCurrentPosition(resolve, reject, {
-                            enableHighAccuracy: true, // Используем GPS если есть
+                            enableHighAccuracy: true,
                             timeout: 10000,
                             maximumAge: 0
                         });
@@ -342,25 +386,19 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
                     accuracy = position.coords.accuracy;
                 } catch (err) {
                     console.warn('Геолокация недоступна:', err);
-                    // Продолжаем без координат — это не критично
                 }
 
-                // 🖼️ 2. Создаём изображение на холсте
                 window.fabric.Image.fromURL(dataURL, (img: any) => {
                     img.set({
                         left: 100,
                         top: 100,
                         scaleX: 0.5,
                         scaleY: 0.5,
-                        // Сохраняем геоданные в метаданные объекта Fabric
                         geoData: { latitude, longitude, accuracy }
                     });
 
                     canvas.add(img);
-
-                    // 3. Сохраняем аннотацию с геоданными
                     saveAnnotation(img, 'image', { latitude, longitude, accuracy });
-
                     canvas.setActiveObject(img);
                     canvas.renderAll();
                 });
@@ -393,6 +431,8 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         loading,
         error,
         actions: { addShape, addPhotoFromPC, deleteSelected },
-        onPhotoClick
+        onPhotoClick,
+        canvasInstance,      // 👇 Экспортируем реф
+        resizeCanvas         // 👇 Экспортируем функцию ресайза
     };
 };

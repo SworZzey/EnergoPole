@@ -49,9 +49,17 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     };
 
     const handleDelete = async () => {
-        if (window.confirm('Удалить проект и все связанные данные (схемы, аннотации, фото)?')) {
+        if (!window.confirm('Удалить проект и все связанные данные (схемы, аннотации, фото)?')) {
+            return;
+        }
+        try {
             await dbService.deleteProject(project.id!);
+
             onDelete();
+        } catch (error) {
+            console.error(error);
+            alert("Не удалось удалить проект. Проверьте консоль.");
+
         }
     };
 

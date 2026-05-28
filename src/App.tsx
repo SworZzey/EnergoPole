@@ -59,7 +59,7 @@ function App() {
 
     const handleSelectSchema = (schema: Schema) => {
         setCurrentSchema(schema);
-        setScreen('ENGINEER_EDITOR'); // ✅ ИСПРАВЛЕНО
+        setScreen('ENGINEER_EDITOR');
     };
 
     const handleBackToProjects = () => {
@@ -93,7 +93,7 @@ function App() {
     };
 
     const handleBackFromEngineerTasks = () => {
-        setCurrentProject(null); // или оставьте, если хотите сохранить контекст
+        setCurrentProject(null);
         setScreen('ENGINEER_PROJECTS');
     };
 
@@ -138,7 +138,7 @@ function App() {
                 style={{
                     position: 'fixed',
                     top: 16,
-                    right: 16,
+                    right: 24,
                     zIndex: 1000,
                     background: 'rgba(239, 68, 68, 0.1)',
                     border: '1px solid var(--accent-error)',
@@ -259,7 +259,6 @@ function App() {
         );
     }
 
-    // ✅ УДАЛЕНО: старый блок с 'PROJECTS' / 'SCHEMAS' / 'EDITOR'
 
     // Fallback для отладки
     return <div>Ошибка навигации: экран {screen}</div>;

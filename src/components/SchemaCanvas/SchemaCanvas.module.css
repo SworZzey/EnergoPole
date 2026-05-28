@@ -1,71 +1,131 @@
-/* Визуальные стили — без изменения layout */
+/* src/components/SchemaCanvas/SchemaCanvas.module.css */
 
+/* Контейнер на весь экран */
 .container {
-    position: relative;
-    display: inline-block;
-    /* Никаких дополнительных width/height */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    overflow: hidden;
+    /* Запрещаем зум и скролл браузера, чтобы не мешал работе с канвасом */
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
+/* Тулбар закреплен сверху */
 .toolbar {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-light);
+    padding: 8px 12px;
     display: flex;
     gap: 8px;
-    padding: 8px;
-    border-radius: 8px;
-    /* Меняем только фон, тень и границу */
-    background: var(--bg-secondary, #1A1D26);
-    box-shadow: var(--shadow-md, 0 8px 12px -2px rgba(0, 0, 0, 0.4));
-    border: 1px solid var(--border-light, rgba(255, 255, 255, 0.08));
-    backdrop-filter: blur(4px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-.toolbar button {
-    /* Оставляем все размеры и отступы как в браузере по умолчанию,
-       но меняем фон, цвет, границу */
-    background: rgba(45, 212, 191, 0.1);
-    border: 1px solid var(--accent-primary, #2DD4BF);
-    color: var(--accent-primary, #2DD4BF);
-    border-radius: 6px;
-    padding: 4px 8px;
-    cursor: pointer;
-    transition: all 0.2s;
+/* Область канваса занимает всё оставшееся место */
+.canvasWrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f8f9fa;
 }
 
-.toolbar button:hover {
-    background: var(--accent-primary, #2DD4BF);
-    color: #0F1117;
-}
-
-/* Отдельно для кнопки удаления — меняем только цветовые акценты */
-.deleteButton {
-    background-color: rgba(239, 68, 68, 0.15) !important;
-    border-color: var(--accent-error, #EF4444) !important;
-    color: var(--accent-error, #EF4444) !important;
-}
-
-.deleteButton:hover {
-    background-color: var(--accent-error, #EF4444) !important;
-    color: white !important;
-}
-
+/* Сам канвас */
 .canvas {
-    border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.12));
-    /* Остальное (размеры) оставляем без изменений */
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    /* Убираем стандартные отступы */
+    margin: 0;
+    padding: 0;
 }
 
+/* Оверлей загрузки */
 .loadingOverlay {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(15, 17, 23, 0.95);
-    backdrop-filter: blur(8px);
-    color: var(--text-primary, #EDF2F7);
-    padding: 15px 25px;
-    border-radius: 8px;
-    border: 1px solid var(--border-light, rgba(255, 255, 255, 0.08));
-    box-shadow: var(--shadow-md);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-secondary);
+    font-weight: 500;
+    z-index: 50;
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 480px) {
+    .toolbar {
+        padding: 6px 10px;
+        gap: 6px;
+    }
+
+    /* В ландшафтном режиме делаем тулбар компактнее */
+    @media (orientation: landscape) {
+        .toolbar {
+            padding: 4px 8px;
+        }
+    }
+}
+
+/* Кнопка "Назад" в тулбаре */
+.backButton {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.backButton:hover {
+    background: rgba(45, 212, 191, 0.08);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.backButton:active {
+    transform: scale(0.97);
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 480px) {
+    .backButton {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    /* В ландшафтном режиме можно скрыть текст, оставить только стрелку */
+    @media (orientation: landscape) {
+        .backButton span {
+            display: none;
+        }
+        .backButton::before {
+            content: "←";
+            font-size: 18px;
+        }
+    }
 }

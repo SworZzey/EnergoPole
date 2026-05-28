@@ -8,6 +8,7 @@
     gap: 16px;
     max-width: 100%;
     box-sizing: border-box;
+    margin-top: 15px;
 }
 
 /* Карточка задачи */
@@ -145,7 +146,7 @@
 /* Адаптив для мобильных */
 @media (max-width: 480px) {
     .taskList {
-        padding: 0 12px; /* 👈 Меньшие отступы на мобильных */
+        padding: 0 24px;
     }
 
     .taskCard {
@@ -218,4 +219,83 @@
     border-color: var(--accent-error);
     color: var(--accent-error);
     background: rgba(239, 68, 68, 0.05);
+}
+
+.tlbHeader {
+    padding: 0 24px;
+}
+
+.backButton {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    margin-top: 16px;
+}
+
+.backButton:hover {
+    background: rgba(45, 212, 191, 0.08);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.backButton:active {
+    transform: scale(0.97);
+}
+
+.blkHeader {
+    color: var(--text-secondary);
+    margin-top: 15px;
+}
+
+.addButton {
+    background-color: var(--accent-primary);
+    color: #0F1117;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+}
+
+.addButton:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    filter: brightness(1.05);
+}
+
+.addButton:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+
+.addButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btnHeader {
+    text-align: center;
+}
+
+.noTasks {
+    padding-left: 24px;
+    font-size: 16px;
+    color: var(--text-primary);
 }

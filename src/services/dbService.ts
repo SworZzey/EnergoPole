@@ -20,13 +20,22 @@ export const dbService = {
         await db.projects.update(id, updates);
     },
 
-    async deleteProject(id: number) {
-        // Каскадное удаление связанных данных
-        await db.schemas.where('projectId').equals(id).delete();
-        await db.annotations.where('projectId').equals(id).delete();
-        await db.notes.where('projectId').equals(id).delete();
-        await db.photos.where('projectId').equals(id).delete();
-        await db.projects.delete(id);
+    async deleteProject(id: number): Promise<void> {
+        if (!id) throw new Error("ID проекта не указан");
+
+        try {
+            // @ts-ignore: Dexie TS types limit overloads to 5 tables, but runtime supports more
+            await db.transaction('rw', db.projects, db.schemas, db.annotations, db.notes, db.photos, async () => {
+                await db.schemas.where('projectId').equals(id).delete();
+                await db.annotations.where('projectId').equals(id).delete();
+                await db.notes.where('projectId').equals(id).delete();
+                await db.photos.where('projectId').equals(id).delete();
+                await db.projects.delete(id);
+            });
+        } catch (error) {
+            console.error("❌ Ошибка при удалении проекта:", error);
+            throw error;
+        }
     },
 
     async deleteSchema(schemaId: number): Promise<void> {

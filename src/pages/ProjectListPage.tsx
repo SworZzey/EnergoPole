@@ -13,13 +13,12 @@ interface ProjectListPageProps {
 const ProjectListPage: React.FC<ProjectListPageProps> = ({ onSelectProject, userRole = 'engineer', onViewTasks}) => {
     return (
         <div className="page-container">
-            <OnlineStatus />
-            <h1>Мои Проекты</h1>
             <ProjectList
                 onSelectProject={onSelectProject}
                 onViewTasks={onViewTasks}
                 userRole={userRole}
             />
+            <OnlineStatus />
         </div>
     );
 };

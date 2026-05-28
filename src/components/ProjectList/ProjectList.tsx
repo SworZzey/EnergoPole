@@ -9,7 +9,7 @@ import ProjectItem from '../ProjectItem/ProjectItem.tsx';
 interface ProjectListProps {
     onSelectProject: (project: Project) => void;
     onViewTasks?: (project: Project) => void;
-    userRole?: 'engineer' | 'manager'; // 👈 Новый проп
+    userRole?: 'engineer' | 'manager'; //
 }
 
 const ProjectList: React.FC<ProjectListProps> = ({ onSelectProject, userRole = 'engineer', onViewTasks}) => {

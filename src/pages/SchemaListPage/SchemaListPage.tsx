@@ -62,13 +62,13 @@ const SchemaListPage: React.FC<SchemaListPageProps> = ({
 
     return (
         <div className="page-container">
-            <div className="toolbar-header">
-                <button onClick={onBack}>← Назад к проектам</button>
-                <h2>{projectName}</h2>
+            <div className={styles.tlbHeader}>
+                <button onClick={onBack} className={styles.backButton}>← Назад к проектам</button>
+                <h2 className={styles.prgName}>{projectName}</h2>
             </div>
 
             <div className={styles.controls}>
-                <button onClick={onAddSchema} className="primary-button">
+                <button onClick={onAddSchema} className={styles.addButton}>
                     ➕ Добавить новую схему
                 </button>
             </div>

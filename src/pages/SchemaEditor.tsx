@@ -12,19 +12,12 @@ interface SchemaEditorPageProps {
 const SchemaEditor: React.FC<SchemaEditorPageProps> = ({ schema, projectId, onBack }) => {
     return (
         <div className="page-container">
-            <div className="toolbar-header">
-                <button onClick={onBack} style={{ marginRight: '10px' }}>
-                    ← Назад к проектам
-                </button>
-                <span>Редактирование схемы: {schema.id}</span>
-            </div>
-
             <SchemaCanvas
                 schemaId={schema.id!}
                 projectId={projectId}
                 imageBlob={schema.imageBlob}
+                onBack={onBack}
             />
-
             <OnlineStatus />
         </div>
     );

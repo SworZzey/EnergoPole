@@ -107,14 +107,12 @@ export class EnergopoleDB extends Dexie {
         });
 
         this.version(3).stores({
-            projects: '++id, name',
-            schemas: '++id, projectId',
-            annotations: '++id, schemaId',
+            projects: '++id, name, isDownloaded, lastSyncAt',
+            schemas: '++id, projectId, name',
+            annotations: '++id, schemaId, projectId, type, createdAt',
             tasks: '++id, projectId, status, syncStatus, createdAt',
-            // остальные таблицы не меняются
         }).upgrade(tx => {
-            // Если база уже была версии 2, просто создаем таблицу tasks
-            // Dexie сделает это автоматически, upgrade нужен только для миграции старых данных
+            // Миграция
         });
     }
 }
