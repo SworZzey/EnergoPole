@@ -137,14 +137,35 @@ def _convert_to_degrees(value) -> float:
 
 
 def validate_image_file(file: UploadFile) -> bool:
-    """Проверить, что файл - изображение"""
+    """Проверить, что файл - валидное изображение"""
     allowed_types = ["image/jpeg", "image/png", "image/jpg", "image/webp"]
-    return file.content_type in allowed_types
+    if file.content_type not in allowed_types:
+        return False
+    try:
+        # Открываем изображение и верифицируем его целостность
+        img = Image.open(file.file)
+        img.verify()
+        # Возвращаем указатель файла в начало для последующего чтения/сохранения
+        file.file.seek(0)
+        return True
+    except Exception:
+        try:
+            file.file.seek(0)
+        except Exception:
+            pass
+        return False
 
 
-def validate_file_size(file: UploadFile, max_size: int | None = None) -> bool:
-    """Проверить размер файла (требует чтения файла)"""
+async def validate_file_size(file: UploadFile, max_size: int | None = None) -> bool:
+    """Проверить размер файла"""
     if max_size is None:
         max_size = settings.max_file_size
     
-    return True
+    # Читаем содержимое, чтобы узнать реальный размер в байтах
+    content = await file.read()
+    file_size = len(content)
+    
+    # Возвращаем указатель в начало
+    await file.seek(0)
+    
+    return file_size <= max_size

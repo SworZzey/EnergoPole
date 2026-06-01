@@ -1,8 +1,13 @@
 import Dexie from 'dexie';
 
+// Helper to generate 24-char hex string (MongoDB ObjectId format)
+export function generateObjectId(): string {
+    return [...Array(24)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+}
+
 // Типы данных
 export interface Project {
-    id?: number;
+    id?: string;
     name: string;
     description: string;
     lastSyncAt?: Date;
@@ -10,8 +15,8 @@ export interface Project {
 }
 
 export interface Schema {
-    id?: number;
-    projectId: number;
+    id?: string;
+    projectId: string;
     name: string;
     imageBlob: Blob;
     originalUrl: string;
@@ -20,9 +25,9 @@ export interface Schema {
 }
 
 export interface Annotation {
-    id?: number;
-    schemaId: number;
-    projectId: number;
+    id?: string;
+    schemaId: string;
+    projectId: string;
     type: 'rect' | 'arrow' | 'text' | 'freehand' | 'image';
     coordinates: string;
     content?: string;
@@ -35,23 +40,23 @@ export interface Annotation {
 }
 
 export interface Note {
-    id?: number;
-    projectId: number;
-    schemaId?: number;
+    id?: string;
+    projectId: string;
+    schemaId?: string;
     title: string;
     description: string;
     priority: 'high' | 'medium' | 'low';
     status: 'open' | 'in_progress' | 'closed';
-    annotationIds?: string;
-    photoIds?: string;
+    annotationIds?: string[];
+    photoIds?: string[];
     syncStatus: 'pending' | 'synced' | 'error';
     createdAt: Date;
     updatedAt: Date;
 }
 
 export interface Task {
-    id?: number;
-    projectId: number;
+    id?: string;
+    projectId: string;
     title: string;
     description: string;
     photoBlob?: Blob | null;
@@ -64,9 +69,9 @@ export interface Task {
 }
 
 export interface Photo {
-    id?: number;
-    projectId: number;
-    noteId?: number;
+    id?: string;
+    projectId: string;
+    noteId?: string;
     imageBlob: Blob;
     thumbnailBlob?: Blob;
     latitude: number | null;
@@ -77,42 +82,24 @@ export interface Photo {
 
 // Класс базы данных
 export class EnergopoleDB extends Dexie {
-    projects!: Dexie.Table<Project, number>;
-    schemas!: Dexie.Table<Schema, number>;
-    annotations!: Dexie.Table<Annotation, number>;
-    notes!: Dexie.Table<Note, number>;
-    photos!: Dexie.Table<Photo, number>;
+    projects!: Dexie.Table<Project, string>;
+    schemas!: Dexie.Table<Schema, string>;
+    annotations!: Dexie.Table<Annotation, string>;
+    notes!: Dexie.Table<Note, string>;
+    photos!: Dexie.Table<Photo, string>;
+    tasks!: Dexie.Table<Task, string>;
 
     constructor() {
-        super('EnergopoleDB');
-        this.version(1).stores({
-            projects: '++id, name, isDownloaded, lastSyncAt',
-            schemas: '++id, projectId, name',
-            annotations: '++id, schemaId, projectId, type, createdAt',
-            notes: '++id, projectId, status, syncStatus, createdAt',
-            photos: '++id, projectId, noteId, syncStatus, timestamp',
-        });
-
-        this.version(2).stores({
-            annotations: '++id, schemaId, projectId, type, createdAt, latitude, longitude',
-            // Остальные таблицы не меняются — их можно не указывать,
-            // Dexie сохранит их конфигурацию из версии 1
-        }).upgrade(tx => {
-            return tx.table('annotations').toCollection().modify(annotation => {
-                annotation.latitude = null;
-                annotation.longitude = null;
-                annotation.geoAccuracy = null;
-                annotation.geoCapturedAt = null;
-            });
-        });
-
-        this.version(3).stores({
-            projects: '++id, name, isDownloaded, lastSyncAt',
-            schemas: '++id, projectId, name',
-            annotations: '++id, schemaId, projectId, type, createdAt',
-            tasks: '++id, projectId, status, syncStatus, createdAt',
-        }).upgrade(tx => {
-
+        super('EnergopoleDB_v4');
+        
+        // Версия 4 сбрасывает БД и использует строковые ID
+        this.version(4).stores({
+            projects: 'id, name, isDownloaded, lastSyncAt',
+            schemas: 'id, projectId, name',
+            annotations: 'id, schemaId, projectId, type, createdAt, latitude, longitude',
+            notes: 'id, projectId, status, syncStatus, createdAt',
+            photos: 'id, projectId, noteId, syncStatus, timestamp',
+            tasks: 'id, projectId, status, syncStatus, createdAt',
         });
     }
 }

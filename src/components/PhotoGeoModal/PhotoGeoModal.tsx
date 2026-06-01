@@ -4,7 +4,7 @@ import styles from './PhotoGeoModal.module.css';
 
 interface PhotoGeoModalProps {
     photoInfo: {
-        id: number;
+        id: string;
         latitude: number | null;
         longitude: number | null;
         accuracy?: number | null;

@@ -6,7 +6,7 @@ import OnlineStatus from '../../components/OnlineStatus.tsx';
 import styles from './SchemaListPage.module.css';
 
 interface SchemaListPageProps {
-    projectId: number;
+    projectId: string;
     projectName: string;
     onSelectSchema: (schema: Schema) => void;
     onBack: () => void;
@@ -42,7 +42,7 @@ const SchemaListPage: React.FC<SchemaListPageProps> = ({
     }, [projectId, refreshTrigger]);
 
     //обработчик удаления
-    const handleDeleteSchema = async (e: React.MouseEvent, schemaId: number) => {
+    const handleDeleteSchema = async (e: React.MouseEvent, schemaId: string) => {
         e.stopPropagation();
 
         if (!window.confirm('Вы уверены, что хотите удалить эту схему? Все аннотации будут потеряны.')) {

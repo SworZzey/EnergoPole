@@ -4,7 +4,7 @@ from app.schemas.schema import SchemaResponse, AnnotationCreate
 from app.models.schema import Schema
 from app.auth import get_current_user
 from app.models.user import User
-from app.utils import save_upload_file, validate_image_file
+from app.utils import save_upload_file, validate_image_file, validate_file_size
 from beanie import PydanticObjectId
 
 router = APIRouter(prefix="/schemas", tags=["Схемы"])
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/schemas", tags=["Схемы"])
 @router.post("/", response_model=SchemaResponse, status_code=status.HTTP_201_CREATED)
 async def upload_schema(
     file: UploadFile = File(...),
-    object_id: str = Form(...),
+    project_id: str = Form(...),
     title: str = Form(...),
     description: str = Form(None),
     current_user: User = Depends(get_current_user)
@@ -24,6 +24,12 @@ async def upload_schema(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Файл должен быть изображением"
+        )
+
+    if not await validate_file_size(file):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Размер файла превышает допустимый лимит"
         )
     
     # Сохраняем оригинал
@@ -36,7 +42,7 @@ async def upload_schema(
         url=url,
         file_size=file_size,
         mime_type=file.content_type or "image/png",
-        object_id=PydanticObjectId(object_id),
+        project_id=PydanticObjectId(project_id),
         title=title,
         description=description,
         uploaded_by=PydanticObjectId(str(current_user.id)),
@@ -49,14 +55,14 @@ async def upload_schema(
     return schema
 
 
-@router.get("/object/{object_id}", response_model=List[SchemaResponse])
-async def get_schemas_by_object(
-    object_id: str,
+@router.get("/project/{project_id}", response_model=List[SchemaResponse])
+async def get_schemas_by_project(
+    project_id: str,
     current_user: User = Depends(get_current_user)
 ):
     """Получить все схемы объекта"""
     schemas = await Schema.find(
-        Schema.object_id == PydanticObjectId(object_id)
+        Schema.project_id == PydanticObjectId(project_id)
     ).to_list()
     return schemas
 

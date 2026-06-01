@@ -4,7 +4,7 @@ from app.models.photo import Photo
 from app.auth import get_current_user
 from app.models.user import User
 from app.utils import (
-    save_upload_file, extract_exif_data, validate_image_file
+    save_upload_file, extract_exif_data, validate_image_file, validate_file_size
 )
 from beanie import PydanticObjectId
 
@@ -14,9 +14,8 @@ router = APIRouter(prefix="/photos", tags=["Фотографии"])
 @router.post("/", response_model=PhotoResponse, status_code=status.HTTP_201_CREATED)
 async def upload_photo(
     file: UploadFile = File(...),
-    object_id: str | None = Form(None),
-    equipment_id: str | None = Form(None),
-    issue_id: str | None = Form(None),
+    project_id: str | None = Form(None),
+    note_id: str | None = Form(None),
     description: str | None = Form(None),
     latitude: float | None = Form(None),
     longitude: float | None = Form(None),
@@ -29,6 +28,12 @@ async def upload_photo(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Файл должен быть изображением (JPEG, PNG, WebP)"
+        )
+    
+    if not await validate_file_size(file):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Размер файла превышает допустимый лимит"
         )
     
     file_path, url, file_size = await save_upload_file(file, subfolder="photos")
@@ -47,12 +52,10 @@ async def upload_photo(
     )
     
     # Привязка к объектам
-    if object_id:
-        photo.object_id = PydanticObjectId(object_id)
-    if equipment_id:
-        photo.equipment_id = PydanticObjectId(equipment_id)
-    if issue_id:
-        photo.issue_id = PydanticObjectId(issue_id)
+    if project_id:
+        photo.project_id = PydanticObjectId(project_id)
+    if note_id:
+        photo.note_id = PydanticObjectId(note_id)
     
     # Геолокация (приоритет: ручная → EXIF)
     if latitude is not None and longitude is not None:

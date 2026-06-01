@@ -6,7 +6,7 @@ import styles from './ProjectTasksList.module.css';
 import TaskGeoView from '../TaskGeoView/TaskGeoView';
 
 interface ProjectTasksListProps {
-    projectId: number;
+    projectId: string;
     onBack: () => void;
     onCreateTask?: () => void;
 }
@@ -19,7 +19,7 @@ const ProjectTasksList: React.FC<ProjectTasksListProps> = ({ projectId, onBack, 
         dbService.getTasksByProject(projectId).then(setTasks).finally(() => setLoading(false));
     }, [projectId]);
 
-    const toggleStatus = async (id: number, currentStatus: Task['status']) => {
+    const toggleStatus = async (id: string, currentStatus: Task['status']) => {
         const next = currentStatus === 'open' ? 'in_progress' : currentStatus === 'in_progress' ? 'closed' : 'open';
         await dbService.updateTaskStatus(id, next);
         setTasks(prev => prev.map(t => t.id === id ? { ...t, status: next } : t));

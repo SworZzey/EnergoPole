@@ -36,7 +36,7 @@ class SchemaResponse(BaseModel):
     url: str
     file_size: int
     mime_type: str
-    object_id: PydanticObjectId
+    project_id: PydanticObjectId
     title: str
     description: str | None = None
     version: int
@@ -55,6 +55,6 @@ class SchemaResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
     
-    @field_serializer('id', 'object_id', 'uploaded_by')
+    @field_serializer('id', 'project_id', 'uploaded_by')
     def serialize_object_id(self, value: PydanticObjectId) -> str | None:
         return str(value) if value else None

@@ -13,9 +13,8 @@ class Photo(Document):
     mime_type: str = "image/jpeg"
 
     # Принадлежость
-    object_id: PydanticObjectId | None = None
-    equipment_id: PydanticObjectId | None = None
-    issue_id: PydanticObjectId | None = None
+    project_id: PydanticObjectId | None = None
+    note_id: PydanticObjectId | None = None
 
     # Геотег
     location: dict | None = None
@@ -39,9 +38,8 @@ class Photo(Document):
     class Settings:
         name = "photos"
         indexes = [
-            "object_id",
-            "equipment_id",
-            "issue_id",
+            "project_id",
+            "note_id",
             [("location", "2dsphere")],
         ]
     

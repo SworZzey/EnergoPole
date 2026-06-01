@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict, field_serializer
 from beanie import PydanticObjectId
 from datetime import datetime
 from typing import Optional
-from app.schemas.object import GeoLocation
+from app.schemas.task import GeoLocation
 
 
 class PhotoResponse(BaseModel):
@@ -12,9 +12,8 @@ class PhotoResponse(BaseModel):
     url: str
     file_size: int
     mime_type: str
-    object_id: PydanticObjectId | None = None
-    equipment_id: PydanticObjectId | None = None
-    issue_id: PydanticObjectId | None = None
+    project_id: PydanticObjectId | None = None
+    note_id: PydanticObjectId | None = None
     location: GeoLocation | None = None
     timestamp_taken: datetime | None = None
     camera_model: str | None = None
@@ -27,6 +26,6 @@ class PhotoResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
     
-    @field_serializer('id', 'object_id', 'equipment_id', 'issue_id', 'uploaded_by')
+    @field_serializer('id', 'project_id', 'note_id', 'uploaded_by')
     def serialize_object_id(self, value: PydanticObjectId) -> str | None:
         return str(value) if value else None

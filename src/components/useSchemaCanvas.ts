@@ -5,11 +5,11 @@ import type { Annotation } from '../db/database';
 import type { IFabricCanvas, IFabricObject, IFabricImage, FabricEvent } from './fabric';
 
 interface UseSchemaCanvasProps {
-    schemaId: number;
-    projectId: number;
+    schemaId: string;
+    projectId: string;
     imageBlob: Blob;
     onPhotoClick?: (photoInfo: {
-        id: number;
+        id: string;
         latitude: number | null;
         longitude: number | null;
         accuracy?: number | null;

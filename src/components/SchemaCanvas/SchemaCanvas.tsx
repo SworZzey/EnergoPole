@@ -6,8 +6,8 @@ import PhotoGeoModal from '../PhotoGeoModal/PhotoGeoModal';
 import styles from './SchemaCanvas.module.css';
 
 interface SchemaCanvasProps {
-    schemaId: number;
-    projectId: number;
+    schemaId: string;
+    projectId: string;
     imageBlob: Blob;
     onBack: () => void;
 }
@@ -19,7 +19,7 @@ const SchemaCanvas: React.FC<SchemaCanvasProps> = ({
                                                        onBack
                                                    }) => {
     const [selectedPhoto, setSelectedPhoto] = useState<{
-        id: number;
+        id: string;
         latitude: number | null;
         longitude: number | null;
         accuracy?: number | null;

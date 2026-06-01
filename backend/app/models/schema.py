@@ -14,7 +14,7 @@ class Schema(Document):
     mime_type: str = "image/png"
     
     # Принадлежность
-    object_id: PydanticObjectId | None
+    project_id: PydanticObjectId | None
     
     # Информация
     title: str
@@ -41,5 +41,5 @@ class Schema(Document):
     class Settings:
         name = "schemas"
         indexes = [
-            "object_id",
+            "project_id",
         ]

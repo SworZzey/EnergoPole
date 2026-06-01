@@ -5,7 +5,7 @@ import type { Schema } from '../db/database';
 
 interface SchemaEditorPageProps {
     schema: Schema;
-    projectId: number;
+    projectId: string;
     onBack: () => void;
 }
 

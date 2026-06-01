@@ -8,9 +8,9 @@ database = client.get_database(settings.database_name)
 async def init_db():
     """Инициализация БД при старте"""
     from app.models.user import User
-    from app.models.object import InspectionObject
-    from app.models.equipment import Equipment
-    from app.models.issue import Issue
+    from app.models.project import Project
+    from app.models.note import Note
+    from app.models.task import Task
     from app.models.photo import Photo
     from app.models.schema import Schema
 
@@ -18,9 +18,9 @@ async def init_db():
         database=database, # type: ignore
         document_models=[
             User,
-            InspectionObject,
-            Equipment,
-            Issue,
+            Project,
+            Note,
+            Task,
             Photo,
             Schema
         ]

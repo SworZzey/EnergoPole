@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from app.database import init_db
 from app.config import settings
 
-from app.routers import auth, objects, equipment, issues, photos, schemas, sync
+from app.routers import auth, projects, notes, tasks, photos, schemas, sync
 
 
 async def seed_demo_users():
@@ -51,7 +51,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -59,14 +64,15 @@ app.add_middleware(
 
 # ── API (все под /api) ──────────────────────────────────────
 app.include_router(auth.router, prefix="/api")
-app.include_router(objects.router, prefix="/api")
-app.include_router(equipment.router, prefix="/api")
-app.include_router(issues.router, prefix="/api")
+app.include_router(projects.router, prefix="/api")
+app.include_router(notes.router, prefix="/api")
+app.include_router(tasks.router, prefix="/api")
 app.include_router(photos.router, prefix="/api")
 app.include_router(schemas.router, prefix="/api")
 app.include_router(sync.router, prefix="/api")
 
 # ── Статика ─────────────────────────────────────────────────
+os.makedirs(settings.upload_dir, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.upload_dir), name="uploads")
 
 # ── SPA (сборка фронта) ─────────────────────────────────────

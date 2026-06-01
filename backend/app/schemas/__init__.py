@@ -1,14 +1,14 @@
 from app.schemas.user import (
     UserCreate, UserLogin, UserUpdate, UserResponse, Token, TokenData
 )
-from app.schemas.object import (
-    ObjectCreate, ObjectUpdate, ObjectResponse, GeoLocation
+from app.schemas.project import (
+    ProjectCreate, ProjectUpdate, ProjectResponse
 )
-from app.schemas.equipment import (
-    EquipmentCreate, EquipmentUpdate, EquipmentResponse
+from app.schemas.note import (
+    NoteCreate, NoteUpdate, NoteResponse
 )
-from app.schemas.issue import (
-    IssueCreate, IssueUpdate, IssueResponse
+from app.schemas.task import (
+    TaskCreate, TaskUpdate, TaskResponse, GeoLocation
 )
 from app.schemas.photo import PhotoResponse
 from app.schemas.schema import SchemaResponse, AnnotationCreate
@@ -16,12 +16,12 @@ from app.schemas.schema import SchemaResponse, AnnotationCreate
 __all__ = [
     # User
     "UserCreate", "UserLogin", "UserUpdate", "UserResponse", "Token", "TokenData",
-    # Object
-    "ObjectCreate", "ObjectUpdate", "ObjectResponse", "GeoLocation",
-    # Equipment
-    "EquipmentCreate", "EquipmentUpdate", "EquipmentResponse",
-    # Issue
-    "IssueCreate", "IssueUpdate", "IssueResponse",
+    # Project
+    "ProjectCreate", "ProjectUpdate", "ProjectResponse",
+    # Note
+    "NoteCreate", "NoteUpdate", "NoteResponse",
+    # Task
+    "TaskCreate", "TaskUpdate", "TaskResponse", "GeoLocation",
     # Photo
     "PhotoResponse",
     # Schema

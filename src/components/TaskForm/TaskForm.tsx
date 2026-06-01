@@ -5,7 +5,7 @@ import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './TaskForm.module.css';
 
 interface TaskFormProps {
-    projectId: number;
+    projectId: string;
     onCancel: () => void;
     onSuccess: () => void;
 }
