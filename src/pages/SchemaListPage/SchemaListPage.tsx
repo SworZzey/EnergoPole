@@ -1,4 +1,4 @@
-// src/pages/SchemaListPage.tsx
+// Список схем проекта
 import React, { useEffect, useState } from 'react';
 import { dbService } from '../../services/dbService.ts';
 import type { Schema } from '../../db/database.ts';
@@ -41,9 +41,9 @@ const SchemaListPage: React.FC<SchemaListPageProps> = ({
         loadSchemas();
     }, [projectId, refreshTrigger]);
 
-    // Новый обработчик удаления
+    //обработчик удаления
     const handleDeleteSchema = async (e: React.MouseEvent, schemaId: number) => {
-        e.stopPropagation(); // Чтобы не сработал клик по всей строке (открытие схемы)
+        e.stopPropagation();
 
         if (!window.confirm('Вы уверены, что хотите удалить эту схему? Все аннотации будут потеряны.')) {
             return;
@@ -51,12 +51,10 @@ const SchemaListPage: React.FC<SchemaListPageProps> = ({
 
         try {
             await dbService.deleteSchema(schemaId);
-            // Оптимистичное обновление UI: удаляем из списка сразу
             setSchemas(prev => prev.filter(s => s.id !== schemaId));
         } catch (error) {
             console.error("Failed to delete schema", error);
             alert("Не удалось удалить схему");
-            // В случае ошибки можно перезагрузить список через trigger, но пока оставим так
         }
     };
 
@@ -69,7 +67,7 @@ const SchemaListPage: React.FC<SchemaListPageProps> = ({
 
             <div className={styles.controls}>
                 <button onClick={onAddSchema} className={styles.addButton}>
-                    ➕ Добавить новую схему
+                    Добавить новую схему
                 </button>
             </div>
 

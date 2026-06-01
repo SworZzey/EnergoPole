@@ -1,11 +1,11 @@
-// src/components/InteractiveMap/InteractiveMap.tsx
-import React, { useEffect } from 'react';
+//Карта
+import React from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import styles from './InteractiveMap.module.css';
 
-// Фикс для иконки маркера в Leaflet + Webpack/Vite
+// Иконка точки
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
@@ -77,7 +77,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
             </MapContainer>
 
             {mode === 'edit' && (
-                <p className={styles.hint}>👆 Кликните по карте, чтобы установить метку</p>
+                <p className={styles.hint}>Кликните по карте, чтобы установить метку</p>
             )}
         </div>
     );

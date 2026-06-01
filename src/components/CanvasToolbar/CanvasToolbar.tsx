@@ -1,4 +1,4 @@
-// components/CanvasToolbar.tsx
+// Копки для рисовалки
 import React from 'react';
 import styles from './CanvasToolbar.module.css';
 
@@ -15,11 +15,11 @@ export const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
 }) => {
     return (
         <div className={styles.toolbar}>
-            <button onClick={onAddRect}>⬛ Прямоугольник</button>
-            <button onClick={onAddArrow}>➡️ Стрелка</button>
-            <button onClick={onAddText}>📝 Текст</button>
-            <button onClick={onAddPhoto}>🖼️ Фото</button>
-            <button className={styles.deleteButton} onClick={onDelete}>🗑️ Удалить</button>
+            <button onClick={onAddRect}>Прямоугольник</button>
+            <button onClick={onAddArrow}>Стрелка</button>
+            <button onClick={onAddText}>Текст</button>
+            <button onClick={onAddPhoto}>Фото</button>
+            <button className={styles.deleteButton} onClick={onDelete}>Удалить</button>
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import Dexie from 'dexie';
 
-// Типы данных (без изменений)
+// Типы данных
 export interface Project {
     id?: number;
     name: string;
@@ -75,7 +75,7 @@ export interface Photo {
     syncStatus: 'pending' | 'synced' | 'error';
 }
 
-// Класс базы данных — используем Dexie.Table как тип
+// Класс базы данных
 export class EnergopoleDB extends Dexie {
     projects!: Dexie.Table<Project, number>;
     schemas!: Dexie.Table<Schema, number>;
@@ -112,7 +112,7 @@ export class EnergopoleDB extends Dexie {
             annotations: '++id, schemaId, projectId, type, createdAt',
             tasks: '++id, projectId, status, syncStatus, createdAt',
         }).upgrade(tx => {
-            // Миграция
+
         });
     }
 }

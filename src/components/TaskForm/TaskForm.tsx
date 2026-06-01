@@ -1,4 +1,4 @@
-// src/components/TaskForm/TaskForm.tsx
+// Создание новой задачи
 import React, { useState } from 'react';
 import { dbService } from '../../services/dbService';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
@@ -47,7 +47,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ projectId, onCancel, onSuccess }) =
     return (
         <div className={styles.formOverlay} onClick={onCancel}>
             <form className={styles.formCard} onClick={e => e.stopPropagation()} onSubmit={handleSubmit}>
-                <h3>📝 Новая задача</h3>
+                <h3>Новая задача</h3>
 
                 <input
                     placeholder="Название задачи"
@@ -79,7 +79,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ projectId, onCancel, onSuccess }) =
                         onClick={() => setMapExpanded(!mapExpanded)}
                         className={styles.mapToggleButton}
                     >
-                        {mapExpanded ? '🗺️ Скрыть карту' : '📍 Указать место на карте'}
+                        {mapExpanded ? 'Скрыть карту' : 'Указать место на карте'}
                     </button>
 
                     {mapExpanded && (
@@ -98,7 +98,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ projectId, onCancel, onSuccess }) =
                     {/* Отображение выбранных координат */}
                     {latitude !== null && longitude !== null && (
                         <div className={styles.coordsPreview}>
-                            📍 {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                            {latitude.toFixed(6)}, {longitude.toFixed(6)}
                         </div>
                     )}
                 </div>

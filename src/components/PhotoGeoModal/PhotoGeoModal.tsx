@@ -1,3 +1,4 @@
+//Геоданные которые добавляются к фотке в режиме инженера
 import React from 'react';
 import styles from './PhotoGeoModal.module.css';
 
@@ -30,7 +31,7 @@ const PhotoGeoModal: React.FC<PhotoGeoModalProps> = ({ photoInfo, onClose }) => 
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                 <button className={styles.closeButton} onClick={onClose}>×</button>
-                <h3 className={styles.title}>📍 Геолокация фото</h3>
+                <h3 className={styles.title}>Геолокация фото</h3>
 
                 {hasCoords ? (
                     <>
@@ -80,7 +81,7 @@ const PhotoGeoModal: React.FC<PhotoGeoModalProps> = ({ photoInfo, onClose }) => 
                                 rel="noopener noreferrer"
                                 className={styles.openMapButton}
                             >
-                                🗺️ Открыть в полной карте
+                                Открыть в полной карте
                             </a>
                             <button onClick={onClose} className={styles.closeButtonPrimary}>
                                 Закрыть
@@ -88,7 +89,7 @@ const PhotoGeoModal: React.FC<PhotoGeoModalProps> = ({ photoInfo, onClose }) => 
                         </div>
                     </>
                 ) : (
-                    /* Состояние: геоданные отсутствуют */
+                    /* геоданные отсутствуют */
                     <div className={styles.warningContainer}>
                         <div className={styles.warningIcon}>📡</div>
                         <h4>Геоданные не получены</h4>

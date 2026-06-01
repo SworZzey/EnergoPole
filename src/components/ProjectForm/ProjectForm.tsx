@@ -1,3 +1,4 @@
+// Форма создания проекта
 import React, { useState } from 'react';
 import { dbService } from '../../services/dbService';
 import styles from './ProjectForm.module.css';
@@ -41,7 +42,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ onProjectAdded }) => {
                 className={styles.input}
             />
             <button onClick={handleSubmit} className={styles.button}>
-                ➕ Добавить проект
+                Добавить проект
             </button>
         </div>
     );

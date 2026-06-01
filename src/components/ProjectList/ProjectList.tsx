@@ -1,4 +1,4 @@
-// src/components/ProjectList/ProjectList.tsx
+//Список проектов
 import React, { useEffect, useState } from 'react';
 import { dbService } from '../../services/dbService';
 import type { Project } from '../../db/database';
@@ -9,7 +9,7 @@ import ProjectItem from '../ProjectItem/ProjectItem.tsx';
 interface ProjectListProps {
     onSelectProject: (project: Project) => void;
     onViewTasks?: (project: Project) => void;
-    userRole?: 'engineer' | 'manager'; //
+    userRole?: 'engineer' | 'manager';
 }
 
 const ProjectList: React.FC<ProjectListProps> = ({ onSelectProject, userRole = 'engineer', onViewTasks}) => {

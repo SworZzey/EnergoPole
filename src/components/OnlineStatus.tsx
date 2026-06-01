@@ -1,3 +1,4 @@
+//Плашка онлайн или офлайн
 import React, {useState, useEffect} from 'react';
 
 const OnlineStatus: React.FC = () => {
@@ -25,7 +26,7 @@ const OnlineStatus: React.FC = () => {
             fontSize: '12px',
             transition: 'all 0.3s',
         }}>
-            {isOnline ? '✅ Онлайн' : '🔴 Офлайн (синхронизация отключена)'}
+            {isOnline ? 'Онлайн' : 'Офлайн (синхронизация отключена)'}
         </div>
     );
 };

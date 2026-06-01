@@ -162,7 +162,7 @@ function App() {
                     e.currentTarget.style.color = 'var(--accent-error)';
                 }}
             >
-                🚪 Выйти
+                Выйти
             </button>
             {children}
         </div>

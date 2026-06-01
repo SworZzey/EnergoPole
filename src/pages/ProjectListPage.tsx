@@ -1,4 +1,4 @@
-// src/pages/ProjectListPage.tsx
+//Список проектов
 import React from 'react';
 import ProjectList from '../components/ProjectList/ProjectList';
 import OnlineStatus from '../components/OnlineStatus';

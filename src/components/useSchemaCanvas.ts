@@ -1,4 +1,4 @@
-// src/hooks/useSchemaCanvas.ts
+// Логика канваса
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { dbService } from '../services/dbService';
 import type { Annotation } from '../db/database';
@@ -21,7 +21,6 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricCanvasRef = useRef<IFabricCanvas | null>(null);
 
-    // 👇 НОВЫЙ: Экспортируемый реф для внешнего управления размером
     const canvasInstance = useRef<IFabricCanvas | null>(null);
 
     const [loading, setLoading] = useState(true);
@@ -117,7 +116,7 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         // Получаем фоновое изображение
         const bgImage = canvas.backgroundImage as IFabricImage;
 
-        // 👇 ЗАЩИТА: Если изображение ещё не загрузилось или не имеет размеров — выходим
+        // Если изображение ещё не загрузилось или не имеет размеров — выходим
         if (!bgImage || !bgImage.width || !bgImage.height) {
             return;
         }
@@ -138,7 +137,7 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
             height: imgHeight * scale
         });
 
-        // Обновляем масштаб самого изображения (на случай, если оно не подтянулось автоматически)
+        // Обновляем масштаб самого изображения
         bgImage.scale(scale);
 
         // Центрируем и перерисовываем
@@ -161,13 +160,13 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         const canvas = new window.fabric.Canvas(canvasElement, {
             selection: true,
             preserveObjectStacking: true,
-            // 👇 Начальные размеры (будут пересчитаны при загрузке изображения)
+            // Начальные размеры
             width: window.innerWidth - 40,
             height: window.innerHeight - 200,
         });
 
         fabricCanvasRef.current = canvas;
-        canvasInstance.current = canvas; // 👇 Сохраняем для внешнего доступа
+        canvasInstance.current = canvas;
 
         const url = URL.createObjectURL(imageBlob);
 
@@ -179,17 +178,16 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
                 return;
             }
 
-            // 👇 Устанавливаем свойства центрирования ПЕРЕД установкой в фон
+            // свойства центрирования
             img.set({
                 originX: 'left',
                 originY: 'top',
             });
 
-            // 1. Устанавливаем изображение как фон (теперь только 2 аргумента — как ждут ваши типы)
+            // устанавливаем изображение как фон
             canvas.setBackgroundImage(img, () => {
                 canvas.renderAll();
 
-                // 2. И ТОЛЬКО ПОТОМ подгоняем размер канваса под экран
                 if (resizeCanvas) resizeCanvas();
             });
 
@@ -241,7 +239,7 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
 
         canvas.on('object:modified', (e: FabricEvent) => updateAnnotation(e.target));
 
-        // 👇 Слушаем изменение размера окна и ориентации
+        // Слушаем изменение размера окна и ориентации
         const handleResize = () => {
             // Дебаунс 100мс, чтобы не дёргать канвас при каждом пикселе
             clearTimeout((handleResize as any)._timer);
@@ -432,7 +430,7 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         error,
         actions: { addShape, addPhotoFromPC, deleteSelected },
         onPhotoClick,
-        canvasInstance,      // 👇 Экспортируем реф
-        resizeCanvas         // 👇 Экспортируем функцию ресайза
+        canvasInstance,
+        resizeCanvas
     };
 };

@@ -1,4 +1,4 @@
-// src/pages/LoginPage.tsx
+//Страница входа
 import React, { useState } from 'react';
 import { authService } from '../../services/authService.ts';
 import styles from './LoginPage.module.css';
@@ -34,7 +34,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <h1 className={styles.title}>🔌 ЭнергоПоле</h1>
+                <h1 className={styles.title}>ЭнергоПоле</h1>
                 <p className={styles.subtitle}>Система обследования объектов</p>
 
                 <form onSubmit={handleSubmit} className={styles.form}>

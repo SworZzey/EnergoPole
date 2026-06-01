@@ -1,4 +1,4 @@
-// src/components/TaskGeoView/TaskGeoView.tsx
+//Карта для карточки задачи
 import React from 'react';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './TaskGeoView.module.css';
@@ -15,7 +15,7 @@ const TaskGeoView: React.FC<TaskGeoViewProps> = ({ latitude, longitude, taskTitl
     return (
         <div className={styles.container}>
             <h4 className={styles.title}>
-                {taskTitle ? `📍 ${taskTitle}` : '📍 Местоположение задачи'}
+                {taskTitle ? `${taskTitle}` : 'Местоположение задачи'}
             </h4>
 
             {hasCoords ? (
@@ -38,12 +38,12 @@ const TaskGeoView: React.FC<TaskGeoViewProps> = ({ latitude, longitude, taskTitl
                         rel="noopener noreferrer"
                         className={styles.openMapLink}
                     >
-                        🗺️ Открыть в полной карте
+                        Открыть в полной карте
                     </a>
                 </>
             ) : (
                 <div className={styles.noCoords}>
-                    <span className={styles.icon}>📡</span>
+                    <span className={styles.icon}></span>
                     <p>Координаты не указаны</p>
                 </div>
             )}

@@ -1,3 +1,4 @@
+//Список задач проекта
 import React, { useEffect, useState } from 'react';
 import { dbService } from '../../services/dbService';
 import type { Task } from '../../db/database';
@@ -36,7 +37,7 @@ const ProjectTasksList: React.FC<ProjectTasksListProps> = ({ projectId, onBack, 
                     {onCreateTask && (
                         <div className={styles.btnHeader}>
                             <button onClick={onCreateTask} className={styles.addButton} style={{marginTop: 20}}>
-                                ➕ Создать новую задачу
+                                Создать новую задачу
                             </button>
                         </div>
                     )}
@@ -49,7 +50,6 @@ const ProjectTasksList: React.FC<ProjectTasksListProps> = ({ projectId, onBack, 
                                 </div>
                                 <p className={styles.description}>{task.description}</p>
 
-                                {/* 👇 Добавляем просмотр карты */}
                                 <TaskGeoView
                                     latitude={task.latitude ?? null}
                                     longitude={task.longitude ?? null}

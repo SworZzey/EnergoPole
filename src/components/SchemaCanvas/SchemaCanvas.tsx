@@ -1,4 +1,4 @@
-// src/components/SchemaCanvas/SchemaCanvas.tsx
+// Создание канваса
 import React, { useState, useEffect } from 'react';
 import { useSchemaCanvas } from '../useSchemaCanvas.ts';
 import { CanvasToolbar } from '../CanvasToolbar/CanvasToolbar.tsx';
@@ -9,14 +9,14 @@ interface SchemaCanvasProps {
     schemaId: number;
     projectId: number;
     imageBlob: Blob;
-    onBack: () => void; // 👈 Новый проп для навигации назад
+    onBack: () => void;
 }
 
 const SchemaCanvas: React.FC<SchemaCanvasProps> = ({
                                                        schemaId,
                                                        projectId,
                                                        imageBlob,
-                                                       onBack // 👈 Деструктурируем
+                                                       onBack
                                                    }) => {
     const [selectedPhoto, setSelectedPhoto] = useState<{
         id: number;
@@ -39,12 +39,9 @@ const SchemaCanvas: React.FC<SchemaCanvasProps> = ({
         onPhotoClick: setSelectedPhoto
     });
 
-    // 👇 Эффект только для ресайза окна/ориентации
     useEffect(() => {
         if (!resizeCanvas) return;
 
-        // Не вызываем resizeCanvas() здесь сразу при маунте!
-        // Это сделает useSchemaCanvas после загрузки картинки.
 
         let resizeTimer: number;
         const handleResize = () => {

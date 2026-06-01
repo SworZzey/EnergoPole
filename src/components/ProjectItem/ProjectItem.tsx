@@ -1,4 +1,4 @@
-// src/components/ProjectList/ProjectItem.tsx
+// Карточка проекта
 import React from 'react';
 import { dbService } from '../../services/dbService';
 import styles from './ProjectItem.module.css';
@@ -8,7 +8,7 @@ interface ProjectItemProps {
     project: Project;
     onDelete: () => void;
     onOpenProject: (project: Project) => void;
-    onViewTasks?: (project: Project) => void; // 👈 Объявили
+    onViewTasks?: (project: Project) => void;
     userRole?: 'engineer' | 'manager';
 }
 
@@ -80,12 +80,11 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             color: 'var(--accent-secondary)'
                         }}
                     >
-                        📋 Задачи
+                        Задачи
                     </button>
                 ) : (
                     // === КНОПКИ ДЛЯ ИНЖЕНЕРА ===
                     <>
-                        {/* 👇 Новая кнопка "Задачи" для инженера */}
                         {onViewTasks && (
                             <button
                                 onClick={() => onViewTasks(project)}
@@ -96,7 +95,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     color: 'var(--accent-primary)'
                                 }}
                             >
-                                📋 Задачи
+                                Задачи
                             </button>
                         )}
 
@@ -104,14 +103,14 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             onClick={() => onOpenProject(project)}
                             className={styles.openButton}
                         >
-                            📂 Открыть
+                            Открыть
                         </button>
 
                         <button
                             onClick={handleUploadSchema}
                             className={styles.schemaButton}
                         >
-                            📷 Загрузить схему
+                            Загрузить схему
                         </button>
                     </>
                 )}
@@ -121,7 +120,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                     onClick={handleDelete}
                     className={styles.deleteButton}
                 >
-                    🗑️ Удалить
+                    Удалить
                 </button>
             </div>
         </li>

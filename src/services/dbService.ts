@@ -1,3 +1,4 @@
+//Функции работы с БД
 import { db } from '../db/database';
 import type { Project, Schema, Annotation, Note, Photo, Task } from '../db/database';
 
@@ -33,7 +34,7 @@ export const dbService = {
                 await db.projects.delete(id);
             });
         } catch (error) {
-            console.error("❌ Ошибка при удалении проекта:", error);
+            console.error("Ошибка при удалении проекта:", error);
             throw error;
         }
     },
@@ -41,10 +42,10 @@ export const dbService = {
     async deleteSchema(schemaId: number): Promise<void> {
         // Используем транзакцию, чтобы гарантировать целостность данных
         await db.transaction('rw', db.schemas, db.annotations, async () => {
-            // 1. Удаляем все аннотации, привязанные к этой схеме
+            // Удаляем все аннотации, привязанные к этой схеме
             await db.annotations.where('schemaId').equals(schemaId).delete();
 
-            // 2. Удаляем саму схему
+            // Удаляем саму схему
             await db.schemas.delete(schemaId);
         });
     },
