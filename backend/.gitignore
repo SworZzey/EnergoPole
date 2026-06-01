@@ -1,0 +1,11 @@
+__pycache__/
+venv/
+
+.env
+
+uploads/
+
+.vscode/
+.idea/
+
+.db

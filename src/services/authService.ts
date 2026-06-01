@@ -1,3 +1,5 @@
+const API = '/api';
+
 export interface User {
     id: string;
     email: string;
@@ -5,24 +7,42 @@ export interface User {
     role: 'engineer' | 'manager';
 }
 
-export const authService = {
-    // Имитация входа (заменить на fetch к  бэкенду)
-    login: async (email: string, password: string): Promise<User> => {
-        await new Promise((res) => setTimeout(res, 800));
+async function handleResponse<T>(res: Response): Promise<T> {
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(body.detail || `Ошибка ${res.status}`);
+    }
+    return res.json();
+}
 
-        if (email === 'manager@example.com' && password === 'manager') {
-            const user: User = { id: '1', email, name: 'Менеджер Сидоров', role: 'manager' };
-            localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('authToken', 'mock-manager-token');
-            return user;
-        }
-        if (email === 'user@example.com' && password === 'password') {
-            const user: User = { id: '2', email, name: 'Инженер Иванов', role: 'engineer' };
-            localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('authToken', 'mock-engineer-token');
-            return user;
-        }
-        throw new Error('Неверный email или пароль');
+export const authService = {
+    login: async (email: string, password: string): Promise<User> => {
+        const tokenRes = await fetch(`${API}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+
+        const { access_token } = await handleResponse<{ access_token: string }>(tokenRes);
+
+        const meRes = await fetch(`${API}/auth/me`, {
+            headers: { Authorization: `Bearer ${access_token}` },
+        });
+
+        const userData = await handleResponse<{
+            id: string; email: string; name: string; role: string;
+        }>(meRes);
+
+        const user: User = {
+            id: userData.id,
+            email: userData.email,
+            name: userData.name,
+            role: userData.role === 'manager' ? 'manager' : 'engineer',
+        };
+
+        localStorage.setItem('authToken', access_token);
+        localStorage.setItem('user', JSON.stringify(user));
+        return user;
     },
 
     logout: () => {
@@ -37,5 +57,9 @@ export const authService = {
 
     isAuthenticated: (): boolean => {
         return !!localStorage.getItem('authToken');
-    }
+    },
+
+    getToken: (): string | null => {
+        return localStorage.getItem('authToken');
+    },
 };
