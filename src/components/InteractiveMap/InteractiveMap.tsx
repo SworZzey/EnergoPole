@@ -1,38 +1,7 @@
-//Карта
+// src/components/InteractiveMap/InteractiveMap.tsx
 import React from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import { Map, Marker } from 'pigeon-maps';
 import styles from './InteractiveMap.module.css';
-
-// Иконка точки
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-
-const DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-});
-L.Marker.prototype.options.icon = DefaultIcon;
-
-interface MapEventsProps {
-    mode: 'edit' | 'view';
-    onLocationSelect?: (lat: number, lon: number) => void;
-}
-
-// Компонент для обработки событий карты
-const MapEvents: React.FC<MapEventsProps> = ({ mode, onLocationSelect }) => {
-    useMapEvents({
-        click: (e) => {
-            if (mode === 'edit' && onLocationSelect) {
-                onLocationSelect(e.latlng.lat, e.latlng.lng);
-            }
-        },
-    });
-    return null;
-};
 
 interface InteractiveMapProps {
     latitude: number | null;
@@ -54,30 +23,40 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
     const defaultLon = longitude ?? 37.6173;
     const zoom = mode === 'edit' ? 13 : 16;
 
+    const handleClick = ({ latLng }: { latLng: [number, number] }) => {
+        if (mode === 'edit' && onLocationChange) {
+            const [lat, lon] = latLng;
+            onLocationChange(lat, lon);
+        }
+    };
+
     return (
         <div className={styles.mapContainer} style={{ height }}>
-            <MapContainer
+            <Map
                 center={[defaultLat, defaultLon]}
                 zoom={zoom}
-                scrollWheelZoom={true}
-                className={styles.leafletMap}
+                height={parseFloat(height)}
+                onClick={handleClick}
+                className={styles.pigeonMap}
+                // Отключаем зум колесиком, чтобы не конфликтовал со скроллом страницы
+                wheelZoom={false}
             >
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-
-                {/* Обработчик кликов для режима редактирования */}
-                <MapEvents mode={mode} onLocationSelect={onLocationChange} />
-
                 {/* Маркер, если координаты есть */}
                 {(latitude !== null && longitude !== null) && (
-                    <Marker position={[latitude, longitude]} />
+                    <Marker anchor={[latitude, longitude]}>
+                        <div style={{
+                            fontSize: '28px',
+                            cursor: 'pointer',
+                            userSelect: 'none'
+                        }}>
+                            📍
+                        </div>
+                    </Marker>
                 )}
-            </MapContainer>
+            </Map>
 
             {mode === 'edit' && (
-                <p className={styles.hint}>Кликните по карте, чтобы установить метку</p>
+                <p className={styles.hint}>👆 Кликните по карте, чтобы установить метку</p>
             )}
         </div>
     );

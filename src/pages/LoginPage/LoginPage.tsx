@@ -34,7 +34,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <h1 className={styles.title}>ЭнергоПоле</h1>
+                <h1 className={styles.title}>FieldSurvey</h1>
                 <p className={styles.subtitle}>Система обследования объектов</p>
 
                 <form onSubmit={handleSubmit} className={styles.form}>
