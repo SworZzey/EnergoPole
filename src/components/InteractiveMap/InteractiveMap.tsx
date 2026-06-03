@@ -56,7 +56,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
             </Map>
 
             {mode === 'edit' && (
-                <p className={styles.hint}>👆 Кликните по карте, чтобы установить метку</p>
+                <p className={styles.hint}>Кликните по карте, чтобы установить метку</p>
             )}
         </div>
     );
