@@ -108,39 +108,48 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
         const canvas = fabricCanvasRef.current;
         if (!canvas || !mountedRef.current) return;
 
-        // Получаем размеры доступной области
         const toolbarHeight = 60;
         const availableWidth = window.innerWidth;
         const availableHeight = window.innerHeight - toolbarHeight;
 
-        // Получаем фоновое изображение
         const bgImage = canvas.backgroundImage as IFabricImage;
-
-        // Если изображение ещё не загрузилось или не имеет размеров — выходим
-        if (!bgImage || !bgImage.width || !bgImage.height) {
-            return;
-        }
+        if (!bgImage || !bgImage.width || !bgImage.height) return;
 
         const imgWidth = bgImage.width;
         const imgHeight = bgImage.height;
 
-        // Вычисляем масштаб
-        const scale = Math.min(
+        // Вычисляем новый масштаб для вписывания в экран
+        const newScale = Math.min(
             availableWidth / imgWidth,
             availableHeight / imgHeight,
             1
         );
 
-        // Устанавливаем размеры
+        // Берем текущий масштаб фона
+        const oldScale = bgImage.scaleX || 1;
+        const ratio = newScale / oldScale;
+
+        // Если масштаб изменился, пропорционально двигаем и масштабируем все объекты
+        if (Math.abs(ratio - 1) > 0.001) {
+            canvas.getObjects().forEach(obj => {
+                obj.set({
+                    left: obj.left! * ratio,
+                    top: obj.top! * ratio,
+                    scaleX: obj.scaleX! * ratio,
+                    scaleY: obj.scaleY! * ratio
+                });
+                obj.setCoords();
+            });
+        }
+
+        // Применяем новый масштаб к фону и размерам канваса
+        bgImage.scale(newScale);
+
         canvas.setDimensions({
-            width: imgWidth * scale,
-            height: imgHeight * scale
+            width: imgWidth * newScale,
+            height: imgHeight * newScale
         });
 
-        // Обновляем масштаб самого изображения
-        bgImage.scale(scale);
-
-        // Центрируем и перерисовываем
         canvas.renderAll();
     }, []);
 
