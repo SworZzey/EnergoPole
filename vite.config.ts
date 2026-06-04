@@ -12,8 +12,8 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'robots.txt', 'icons/*.png'],
       manifest: {
-        name: 'ЭнергоПоле: Обследование объектов',
-        short_name: 'ЭнергоПоле',
+        name: 'Field Survey: Обследование объектов',
+        short_name: 'Field Survey',
         description: 'Приложение для полевого обследования объектов электроснабжения',
         theme_color: '#1E3A8A',
         background_color: '#F3F4F6',

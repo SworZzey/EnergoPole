@@ -155,7 +155,7 @@ export const useSchemaCanvas = ({ schemaId, projectId, imageBlob, onPhotoClick }
 
     // --- Эффекты ---
 
-    // 1. Инициализация холста
+    // Инициализация холста
     useEffect(() => {
         mountedRef.current = true;
         const canvasElement = canvasRef.current;
